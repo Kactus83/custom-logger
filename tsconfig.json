@@ -1,0 +1,52 @@
+{
+    "compilerOptions": {
+
+      /* Target */
+      "target": "ES2017",
+
+      /* Chemins de Base */
+      "baseUrl": "./",                        // Base directory to resolve non-absolute module names
+      "paths": {                              // Séries d'alias pour importer vos modules plus facilement
+        "@models/*": ["src/models/*"],
+        "@services/*": ["src/services/*"],
+        "@types/*": ["src/types/*"],
+        "@lib/*": ["src/services/lib/*"]
+      },
+  
+      /* Qualité du Code */
+      "strict": true,                         // Active tous les paramètres stricts de type
+      "noImplicitAny": true,                  // Augmente la vérification des types en interdisant les 'any' implicites
+      "strictNullChecks": true,               // Active les vérifications strictes de nullité
+      "strictFunctionTypes": true,            // Utilise le typage strict pour les fonctions
+      "strictPropertyInitialization": true,   // Assure que les propriétés des classes soient initialisées dans le constructeur
+      "noImplicitThis": true,                 // Augmente la vérification des valeurs de 'this' implicites
+      "alwaysStrict": true,                   // Force l'usage du mode strict de JavaScript
+  
+      /* Modules */
+      "module": "commonjs",                   // Type de module, commonjs est idéal pour Node.js
+      "esModuleInterop": true,                // Active l'interopérabilité par défaut pour les modules ES6
+      "forceConsistentCasingInFileNames": true, // Empêche les problèmes de casse entre les systèmes de fichiers
+  
+      /* Résolution des fichiers */
+      "resolveJsonModule": true,              // Permet l'importation de fichiers .json
+      "moduleResolution": "node",             // Stratégie de résolution de module
+      "allowSyntheticDefaultImports": true,   // Permet les imports par défaut pour les modules sans export par défaut
+  
+      /* Sortie */
+      "outDir": "./dist",                     // Répertoire de sortie pour les fichiers compilés
+      "declaration": true,                    // Génère des fichiers .d.ts pour la librairie
+      "sourceMap": true,                      // Génère des fichiers sourceMap pour le débogage
+  
+      /* Expérimental */
+      "experimentalDecorators": true,         // Active le support expérimental des décorateurs
+      "emitDecoratorMetadata": true           // Active l'émission de métadonnées pour les décorateurs
+    },
+    "include": [
+      "src/**/*"                              // Inclut tous les fichiers TypeScript dans src/
+    ],
+    "exclude": [
+      "node_modules",                         // Exclut le répertoire node_modules
+      "**/*.spec.ts"                          // Exclut les fichiers de tests
+    ]
+  }
+  
