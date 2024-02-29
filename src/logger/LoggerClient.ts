@@ -1,5 +1,5 @@
-import { LoggerConfig } from "@models/LoggerConfig";
-import { LoggerStylesConfig } from "@models/LoggerStylesConfig";
+import { LoggerConfig } from "../models/LoggerConfig";
+import { LoggerStylesConfig } from "../models/LoggerStylesConfig";
 import { LoggingService } from "./LoggingService";
 import { LogLevel } from "../types/LogLevel";
 import ServiceMetadata from "../types/ServiceMetadata";
