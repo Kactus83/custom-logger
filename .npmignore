@@ -1,2 +1,7 @@
-node_modules/
+src/
+*.ts
+*.map
+
 dist/
+*.ts
+*.map
