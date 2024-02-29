@@ -4,7 +4,7 @@ import { LoggerStyleService } from "./services/styles/LoggerStyleService";
 import ServiceMetadata from "../types/ServiceMetadata";
 import { LogLevel } from "../types/LogLevel";
 
-class LoggingService {
+export class LoggingService {
     private static instance: LoggingService | null = null;
     private loggerConfig?: LoggerConfig;
     private loggerStylesConfig?: LoggerStylesConfig;
@@ -27,6 +27,18 @@ class LoggingService {
         this.loggerConfig = loggerConfig;
         this.loggerStylesConfig = loggerStylesConfig;
         this.loggerStyleService = new LoggerStyleService(loggerStylesConfig, loggerConfig.loggerMode);
+    }
+
+    // Méthode statique pour initialiser le service de log
+    public static initialize(loggerConfig: LoggerConfig, loggerStylesConfig: LoggerStylesConfig): void {
+        const instance = LoggingService.getInstance();
+        instance.init(loggerConfig, loggerStylesConfig);
+    }
+
+    // Vérifie si le service de log a été initialisé
+    public static isInitialized(): boolean {
+        const instance = LoggingService.getInstance();
+        return !!instance.loggerConfig && !!instance.loggerStylesConfig;
     }
 
     // Mise à jour de la configuration du service de log
@@ -55,7 +67,7 @@ class LoggingService {
         return this.loggerConfig ? level >= this.loggerConfig.logLevel : false;
     }
 
-    private registerServiceIfNeeded(metadata: ServiceMetadata): void {
+    public registerServiceIfNeeded(metadata: ServiceMetadata): void {
         if (!this.findServiceMetadata(metadata.serviceName)) {
             this.servicesMetadata.push(metadata);
         }
