@@ -1,8 +1,9 @@
 {
   "name": "custom-logging-module",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Custom logger for typescript projects",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./dist",
@@ -13,5 +14,8 @@
   "license": "ISC",
   "devDependencies": {
     "rimraf": "^5.0.5"
-  }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }
