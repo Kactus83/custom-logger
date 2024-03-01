@@ -1,34 +1,55 @@
 import { LoggerElementConfig, LoggerElementStyles, LoggerStylesConfigOptions } from "./LoggerStylesConfig";
 import { TerminalStyles } from "../types/TerminalStyles";
 import { DarkColorMapping, LightColorMapping } from "./ColorsMaps"; 
+import { ColorChoice } from "../types/TerminalColors";
 
 // Définition initiale de styles par défaut pour réutilisation
-const defaultStyles: LoggerElementStyles = { default: [TerminalStyles.Reset] };
+const defaultStyles: LoggerElementStyles = {
+    default: [TerminalStyles.None]
+};
+const defaultStyles_Tag: LoggerElementStyles = {
+    default: [TerminalStyles.Bright]
+};
+const defaultStyles_Timestamps: LoggerElementStyles = {
+    default: [TerminalStyles.Dim]
+};
 
 // Construction de la configuration pour le mode CLASSIC
 export const classicOptions: LoggerStylesConfigOptions = {
-    timestamp: new LoggerElementConfig(defaultStyles, defaultStyles),
-    logLevel: new LoggerElementConfig(defaultStyles, defaultStyles),
-    serviceName: new LoggerElementConfig(defaultStyles, defaultStyles),
+    timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
+    logLevel: new LoggerElementConfig(defaultStyles_Tag, defaultStyles_Tag),
+    serviceName: new LoggerElementConfig(defaultStyles_Tag, defaultStyles_Tag),
     message: new LoggerElementConfig(defaultStyles, defaultStyles),
-    colorMapping: DarkColorMapping
+    colorMapping: DarkColorMapping,
+    mainProcessColor: ColorChoice.White
 };
 
 // Construction de la configuration pour le mode COLORED
 const coloredStyles: LoggerElementStyles = {
-    default: [TerminalStyles.Bright],
+    default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
-    debug: [TerminalStyles.Reset],
-    info: [TerminalStyles.Bright, TerminalStyles.Underscore],
-    warn: [TerminalStyles.Blink],
-    error: [TerminalStyles.Reverse]
+    debug: [TerminalStyles.Dim],
+    info: [TerminalStyles.None],
+    warn: [TerminalStyles.None],
+    error: [TerminalStyles.None]
 };
+const coloredStyles_Tags: LoggerElementStyles = {
+    default: [TerminalStyles.None],
+    trace: [TerminalStyles.Dim],
+    debug: [TerminalStyles.Dim],
+    info: [TerminalStyles.None],
+    warn: [TerminalStyles.Bright],
+    error: [TerminalStyles.Bright]
+};
+
 export const coloredOptions: LoggerStylesConfigOptions = {
-    timestamp: new LoggerElementConfig(coloredStyles, coloredStyles),
-    logLevel: new LoggerElementConfig(coloredStyles, coloredStyles),
-    serviceName: new LoggerElementConfig(coloredStyles, coloredStyles),
+    timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
+    logLevel: new LoggerElementConfig(coloredStyles_Tags, coloredStyles_Tags),
+    serviceName: new LoggerElementConfig(coloredStyles_Tags, coloredStyles_Tags),
     message: new LoggerElementConfig(coloredStyles, coloredStyles),
-    colorMapping: DarkColorMapping
+    colorMapping: DarkColorMapping,
+    mainProcessColor: ColorChoice.Cyan,
+    subProcessColor: ColorChoice.Blue
 };
 
 // Construction de la configuration pour le mode DOCKER
@@ -40,10 +61,20 @@ const dockerStyles: LoggerElementStyles = {
     warn: [TerminalStyles.Blink],
     error: [TerminalStyles.Reverse]
 };
+const dockerStyles_Tags: LoggerElementStyles = {
+    default: [TerminalStyles.None],
+    trace: [TerminalStyles.Dim],
+    debug: [TerminalStyles.Dim],
+    info: [TerminalStyles.None],
+    warn: [TerminalStyles.Bright],
+    error: [TerminalStyles.Bright]
+};
 export const dockerOptions: LoggerStylesConfigOptions = {
-    timestamp: new LoggerElementConfig(dockerStyles, dockerStyles),
-    logLevel: new LoggerElementConfig(dockerStyles, dockerStyles),
-    serviceName: new LoggerElementConfig(dockerStyles, dockerStyles),
+    timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
+    logLevel: new LoggerElementConfig(dockerStyles_Tags, dockerStyles_Tags),
+    serviceName: new LoggerElementConfig(dockerStyles_Tags, dockerStyles_Tags),
     message: new LoggerElementConfig(dockerStyles, dockerStyles),
-    colorMapping: DarkColorMapping
+    colorMapping: DarkColorMapping,
+    mainProcessColor: ColorChoice.Random,
+    subProcessColor: ColorChoice.Random
 };

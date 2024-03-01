@@ -15,9 +15,9 @@ export class LoggerStyleService {
         const colorCode = this.getColorCode(processMetadata, stylesConfig);
     
         // Récupérez directement les styles nécessaires à partir de la configuration
-        const timestampStyles = stylesConfig.timestamp.getStyles(processMetadata.isMainProcess, LogLevel.INFO); // INFO ou un autre niveau par défaut pour le timestamp
+        const timestampStyles = stylesConfig.timestamp.getStyles(processMetadata.isMainProcess, level); 
         const logLevelStyles = stylesConfig.logLevel.getStyles(processMetadata.isMainProcess, level);
-        const serviceNameStyles = stylesConfig.serviceName.getStyles(processMetadata.isMainProcess, LogLevel.INFO); // INFO pour simplifier
+        const serviceNameStyles = stylesConfig.serviceName.getStyles(processMetadata.isMainProcess, level); 
         const messageStyles = stylesConfig.message.getStyles(processMetadata.isMainProcess, level);
     
         // Formatage des différentes parties du message
