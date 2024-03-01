@@ -1,4 +1,4 @@
-import { LogLevel } from "../types/LogLevel"; // Assurez-vous que le chemin est correct
+import { LogLevel } from "../types/LogLevel";
 import { ColorChoice } from "../types/TerminalColors";
 import { TerminalStyles } from "../types/TerminalStyles";
 import { DarkColorMapping } from "./ColorsMaps";
@@ -13,7 +13,7 @@ export interface LoggerElementStyles {
     error?: TerminalStyles[];
 }
 
-class LoggerElementConfig {
+export class LoggerElementConfig {
     MainProcess: LoggerElementStyles;
     SubProcess: LoggerElementStyles;
 
@@ -29,22 +29,61 @@ class LoggerElementConfig {
 
     private resolveStyles(styles: LoggerElementStyles, level: LogLevel): TerminalStyles[] {
         switch (level) {
-            case LogLevel.TRACE:
-                return styles.trace || styles.default;
-            case LogLevel.DEBUG:
-                return styles.debug || styles.default;
-            case LogLevel.INFO:
-                return styles.info || styles.default;
-            case LogLevel.WARN:
-                return styles.warn || styles.default;
-            case LogLevel.ERROR:
-                return styles.error || styles.default;
-            default:
-                return styles.default;
+            case LogLevel.TRACE: return styles.trace || styles.default;
+            case LogLevel.DEBUG: return styles.debug || styles.default;
+            case LogLevel.INFO: return styles.info || styles.default;
+            case LogLevel.WARN: return styles.warn || styles.default;
+            case LogLevel.ERROR: return styles.error || styles.default;
+            default: return styles.default;
         }
     }
 }
 
+export class LoggerStylesConfig {
+    timestamp: LoggerElementConfig;
+    logLevel: LoggerElementConfig;
+    serviceName: LoggerElementConfig;
+    message: LoggerElementConfig;
+    mainProcessColor: ColorChoice = ColorChoice.White;
+    subProcessColor: ColorChoice = ColorChoice.White;
+    colorMapping: { [key in ColorChoice]: string } = DarkColorMapping;
+
+    constructor() {
+        // Initialisation avec des styles par défaut pour chaque élément de log
+        let defaultElementStyles: LoggerElementStyles = { default: [TerminalStyles.Reset] };
+        this.timestamp = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
+        this.logLevel = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
+        this.serviceName = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
+        this.message = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
+    }
+
+    // Méthode pour fusionner la configuration actuelle avec une nouvelle
+    updateConfig(newConfig: LoggerStylesConfigOptions): void {
+        if (newConfig.timestamp) {
+            this.timestamp = new LoggerElementConfig(newConfig.timestamp.MainProcess, newConfig.timestamp.SubProcess);
+        }
+        if (newConfig.logLevel) {
+            this.logLevel = new LoggerElementConfig(newConfig.logLevel.MainProcess, newConfig.logLevel.SubProcess);
+        }
+        if (newConfig.serviceName) {
+            this.serviceName = new LoggerElementConfig(newConfig.serviceName.MainProcess, newConfig.serviceName.SubProcess);
+        }
+        if (newConfig.message) {
+            this.message = new LoggerElementConfig(newConfig.message.MainProcess, newConfig.message.SubProcess);
+        }
+        if (newConfig.mainProcessColor) {
+            this.mainProcessColor = newConfig.mainProcessColor;
+        }
+        if (newConfig.subProcessColor) {
+            this.subProcessColor = newConfig.subProcessColor;
+        }
+        if (newConfig.colorMapping) {
+            this.colorMapping = newConfig.colorMapping; 
+        }
+    }
+}
+
+// Utilisation de l'interface pour les options de configuration externe
 export interface LoggerStylesConfigOptions {
     timestamp?: LoggerElementConfig;
     logLevel?: LoggerElementConfig;
@@ -52,44 +91,6 @@ export interface LoggerStylesConfigOptions {
     message?: LoggerElementConfig;
     mainProcessColor?: ColorChoice;
     subProcessColor?: ColorChoice;
+    colorMapping?: { [key in ColorChoice]: string }; 
 }
 
-// Classe pour la configuration des styles
-export class LoggerStylesConfig {
-    timestamp: LoggerElementConfig;
-    logLevel: LoggerElementConfig;
-    serviceName: LoggerElementConfig;
-    message: LoggerElementConfig;
-    mainProcessColor: ColorChoice;
-    subProcessColor: ColorChoice;
-    colorMapping: { [key in ColorChoice]: string };
-
-    constructor(options?: LoggerStylesConfigOptions) {
-        this.timestamp = this.createLoggerElementConfig(options?.timestamp, { default: [TerminalStyles.Dim] });
-        this.logLevel = this.createLoggerElementConfig(options?.logLevel, {
-            default: [TerminalStyles.Reset],
-            trace: [TerminalStyles.Dim],
-            debug: [TerminalStyles.Dim],
-            info: [TerminalStyles.Reset],
-            warn: [TerminalStyles.Bright],
-            error: [TerminalStyles.Bright]
-        }, true);
-        this.serviceName = this.createLoggerElementConfig(options?.serviceName, { default: [TerminalStyles.Bright] });
-        this.message = this.createLoggerElementConfig(options?.message, { default: [TerminalStyles.Reset] });
-        this.mainProcessColor = options?.mainProcessColor || ColorChoice.White;
-        this.subProcessColor = options?.subProcessColor || ColorChoice.White;
-        this.colorMapping = DarkColorMapping;
-    }
-
-    private createLoggerElementConfig(configOption: LoggerElementConfig | undefined, defaultStyles: LoggerElementStyles, includeLogLevelStyles: boolean = false): LoggerElementConfig {
-        let mainProcessStyles = { ...defaultStyles };
-        let subProcessStyles = { ...defaultStyles };
-
-        if (configOption) {
-            mainProcessStyles = { ...mainProcessStyles, ...configOption.MainProcess };
-            subProcessStyles = { ...subProcessStyles, ...configOption.SubProcess };
-        }
-
-        return new LoggerElementConfig(mainProcessStyles, subProcessStyles);
-    }
-}

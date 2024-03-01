@@ -3,11 +3,11 @@ import { LoggerStylesConfig } from "../models/LoggerStylesConfig";
 import { LoggerStyleService } from "./services/styles/LoggerStyleService";
 import ServiceMetadata from "../types/ServiceMetadata";
 import { LogLevel } from "../types/LogLevel";
+import { StyleConfigManager } from "./services/styles/StyleConfigManager";
 
 export class LoggingService {
     private static instance: LoggingService | null = null;
     private loggerConfig?: LoggerConfig;
-    private loggerStylesConfig?: LoggerStylesConfig;
     private loggerStyleService?: LoggerStyleService;
     private servicesMetadata: ServiceMetadata[] = [];
 
@@ -23,27 +23,27 @@ export class LoggingService {
     }
 
     // Initialisation du service de log avec configuration
-    public init(loggerConfig: LoggerConfig, loggerStylesConfig: LoggerStylesConfig): void {
+    public init(loggerConfig: LoggerConfig): void {
         this.loggerConfig = loggerConfig;
-        this.loggerStylesConfig = loggerStylesConfig;
-        this.loggerStyleService = new LoggerStyleService(loggerStylesConfig, loggerConfig.loggerMode);
+        StyleConfigManager.getInstance().updateStyleConfig(loggerConfig);
+        this.loggerStyleService = new LoggerStyleService();
     }
 
     // Méthode statique pour initialiser le service de log
-    public static initialize(loggerConfig: LoggerConfig, loggerStylesConfig: LoggerStylesConfig): void {
+    public static initialize(loggerConfig: LoggerConfig, loggerStylesConfig?: LoggerStylesConfig): void {
         const instance = LoggingService.getInstance();
-        instance.init(loggerConfig, loggerStylesConfig);
+        instance.init(loggerConfig);
     }
 
     // Vérifie si le service de log a été initialisé
     public static isInitialized(): boolean {
         const instance = LoggingService.getInstance();
-        return !!instance.loggerConfig && !!instance.loggerStylesConfig;
+        return !!instance.loggerConfig;
     }
 
     // Mise à jour de la configuration du service de log
-    public updateConfig(loggerConfig: LoggerConfig, loggerStylesConfig: LoggerStylesConfig): void {
-        this.init(loggerConfig, loggerStylesConfig);
+    public updateConfig(loggerConfig: LoggerConfig): void {
+        this.init(loggerConfig);
     }
 
     // Méthode pour logger les messages

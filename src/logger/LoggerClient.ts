@@ -6,15 +6,12 @@ import ServiceMetadata from "../types/ServiceMetadata";
 import { ColorChoice } from "../types/TerminalColors";
 import { LoggerMode } from "../types/LoggerMode";
 
-// Configuration par défaut pour LoggerStylesConfig
-const defaultLoggerStylesConfig = new LoggerStylesConfig();
-
 export abstract class LoggerClient {
     protected serviceMetadata: ServiceMetadata;
 
-    constructor(serviceName: string, isMainProcess: boolean = false, logLevel: LogLevel = LogLevel.INFO, color?: ColorChoice) {
+    constructor(loggerMode: LoggerMode, serviceName: string, isMainProcess: boolean = false, logLevel: LogLevel = LogLevel.INFO, color?: ColorChoice) {
         // Crée une configuration de logger spécifique à ce client
-        const loggerConfig = new LoggerConfig(logLevel, LoggerMode.CLASSIC);
+        const loggerConfig = new LoggerConfig(logLevel, loggerMode);
         
         // Initialise LoggingService avec la configuration spécifique si nécessaire
         this.ensureLoggingServiceInitialized(loggerConfig);
@@ -33,7 +30,7 @@ export abstract class LoggerClient {
     private ensureLoggingServiceInitialized(loggerConfig: LoggerConfig): void {
         if (!LoggingService.isInitialized()) {
             // Initialise le service de log avec la configuration spécifique au client et la configuration par défaut des styles
-            LoggingService.initialize(loggerConfig, defaultLoggerStylesConfig);
+            LoggingService.initialize(loggerConfig);
         } else {
             // Optionnel : Mettre à jour la configuration si nécessaire
             // LoggingService.getInstance().updateConfig(loggerConfig, defaultLoggerStylesConfig);
