@@ -14,50 +14,36 @@ export class LoggerStyleService {
     }
 
     public formatMessage(processMetadata: ServiceMetadata, level: LogLevel, message: string): string {
-        // Format chaque partie du message de log séparément
-        const timestamp = this.formatTimestamp();
-        const logLevelTag = this.formatLogLevelTag(level, processMetadata.isMainProcess);
-        const serviceNameTag = this.formatServiceNameTag(processMetadata.serviceName, processMetadata.isMainProcess);
-        const formattedMessage = this.formatMessageContent(message, level, processMetadata.isMainProcess);
-
-        return `${timestamp} ${logLevelTag} ${serviceNameTag} - ${formattedMessage}`;
-    }
-
-    private formatTimestamp(): string {
+        const colorCode = this.getColorCode(processMetadata);
+    
+        // Récupérez directement les styles nécessaires à partir de la configuration
+        const timestampStyles = this.stylesConfig.timestamp.getStyles(processMetadata.isMainProcess, LogLevel.INFO); // INFO ou un autre niveau par défaut pour le timestamp
+        const logLevelStyles = this.stylesConfig.logLevel.getStyles(processMetadata.isMainProcess, level);
+        const serviceNameStyles = this.stylesConfig.serviceName.getStyles(processMetadata.isMainProcess, LogLevel.INFO); // INFO pour simplifier
+        const messageStyles = this.stylesConfig.message.getStyles(processMetadata.isMainProcess, level);
+    
+        // Formatage des différentes parties du message
         const now = new Date();
-        const styles = this.stylesConfig.timestamp.getStyle(false, 'DEFAULT');
-        return this.applyStyle(`[${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`, styles);
+        const timestamp = `[${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`;
+        const logLevelTag = `[${LogLevel[level]}]`;
+        const serviceNameTag = `[${processMetadata.serviceName}]`;
+    
+        // Appliquez les styles et la couleur à chaque partie du message
+        const formattedTimestamp = this.applyStyle(timestamp, timestampStyles, colorCode);
+        const formattedLogLevelTag = this.applyStyle(logLevelTag, logLevelStyles, colorCode);
+        const formattedServiceNameTag = this.applyStyle(serviceNameTag, serviceNameStyles, colorCode);
+        const formattedMessage = this.applyStyle(message, messageStyles, colorCode);
+    
+        return `${formattedTimestamp} ${formattedLogLevelTag} ${formattedServiceNameTag} - ${formattedMessage}`;
     }
 
-    private formatLogLevelTag(level: LogLevel, isMainProcess: boolean): string {
-        const styles = this.stylesConfig.logLevel.getStyle(isMainProcess, level);
-        return this.applyStyle(`[${LogLevel[level]}]`, styles);
+    private getColorCode(metadata: ServiceMetadata): string {
+        const color = metadata.isMainProcess ? this.stylesConfig.mainProcessColor : this.stylesConfig.subProcessColor;
+        return this.stylesConfig.colorMapping[color];
     }
 
-    private formatServiceNameTag(serviceName: string, isMainProcess: boolean): string {
-        const styles = this.stylesConfig.serviceName.getStyle(isMainProcess, 'DEFAULT');
-        return this.applyStyle(`[${serviceName}]`, styles);
+    private applyStyle(text: string, styles: TerminalStyles[], colorCode: string): string {
+        const styleCodes = styles.join('');
+        return `${colorCode}${styleCodes}${text}${TerminalStyles.Reset}`;
     }
-
-    private formatMessageContent(message: string, level: LogLevel, isMainProcess: boolean): string {
-        const styles = this.stylesConfig.message.getStyle(isMainProcess, level);
-        return this.applyStyle(message, styles);
-    }
-
-    private applyStyle(text: string, styles: TerminalStyles[]): string {
-        const styleCodes = styles.map(style => {
-            // Glitch pour le compilateur (trouver mieux)
-            const key = style as unknown as keyof typeof TerminalStyles;
-            return TerminalStyles[key];
-        }).join('');
-        const resetStyle = TerminalStyles.Reset;
-        return `${styleCodes}${text}${resetStyle}`;
-    }
-    
-    
-    
-    public updateStyleConfig(newConfig: LoggerStylesConfig): void {
-        this.stylesConfig = newConfig;
-    }
-    
 }
