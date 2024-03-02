@@ -1,19 +1,26 @@
-import { LoggingService } from "../LoggingService";
+import { MainProcessMetadata, SubProcessMetadata } from "../../types/ServiceMetadata";
 import { LogLevel } from "../../types/LogLevel";
-import ServiceMetadata from "../../types/ServiceMetadata";
+import { LoggingService } from "../LoggingService";
 
 export abstract class LoggerClient {
-    protected serviceMetadata: ServiceMetadata;
+    protected serviceName: string;
+    protected mainProcessName?: string;
 
-    constructor(serviceName: string, isMainProcess: boolean) {
-        this.serviceMetadata = { serviceName, isMainProcess };
-        if (!LoggingService.isInitialized() && !isMainProcess) {
-            throw new Error("LoggingService must be initialized by a MainProcessLoggerClient before creating a SubProcessLoggerClient.");
-        }
-        LoggingService.getInstance().registerServiceIfNeeded(this.serviceMetadata);
+    constructor(serviceName: string, mainProcessName?: string) {
+        this.serviceName = serviceName;
+        this.mainProcessName = mainProcessName;
+        this.init();
+        this.register();
     }
 
+    protected abstract init(): void;
+    protected abstract getServiceMetadata(): SubProcessMetadata | MainProcessMetadata;
+
+    protected register(): void {
+        const metadata = this.getServiceMetadata();
+        this.serviceName = LoggingService.getInstance().registerService(metadata);
+    }
     protected log(level: LogLevel, message: string): void {
-        LoggingService.getInstance().log(this.serviceMetadata, level, message);
+        LoggingService.getInstance().log(this.serviceName, level, message);
     }
 }

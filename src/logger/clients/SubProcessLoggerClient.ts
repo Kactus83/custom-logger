@@ -1,10 +1,17 @@
+import { SubProcessMetadata } from "../../types/ServiceMetadata";
 import { LoggerClient } from "./LoggerClient";
 
 export class SubProcessLoggerClient extends LoggerClient {
-    constructor(serviceName: string) {
-        super(serviceName, false);
+
+    constructor(serviceName: string, mainProcessName: string) {
+        super(serviceName, mainProcessName);
     }
 
-    // Pas besoin de surcharger ou d'ajouter des méthodes spécifiques ici,
-    // sauf si vous avez des comportements spécifiques aux sous-processus.
+    protected init(): void {
+        // Aucune initialisation spécifique requise pour les subprocesses
+    }
+
+    protected getServiceMetadata(): SubProcessMetadata {
+        return new SubProcessMetadata(this.serviceName, this.mainProcessName!);
+    }
 }

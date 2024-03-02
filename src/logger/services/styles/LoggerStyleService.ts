@@ -1,30 +1,28 @@
+import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../../types/ServiceMetadata";
 import { LoggerStylesConfig } from "../../../models/LoggerStylesConfig";
 import { LogLevel } from "../../../types/LogLevel";
-import ServiceMetadata from "../../../types/ServiceMetadata";
 import { TerminalStyles } from "../../../types/TerminalStyles";
 import { StyleConfigManager } from "./StyleConfigManager";
 
 export class LoggerStyleService {
 
-    constructor() {
-    }
-
-    public formatMessage(processMetadata: ServiceMetadata, level: LogLevel, message: string): string {
-        
+    public formatMessage(metadata: IServiceMetadata, level: LogLevel, message: string): string {
         const stylesConfig = StyleConfigManager.getInstance().getLoggerStylesConfig();
-        const colorCode = this.getColorCode(processMetadata, stylesConfig);
+        const isMainProcess = this.isMainProcessMetadata(metadata);
+
+        const colorCode = this.getColorCode(metadata, stylesConfig, isMainProcess);
     
         // Récupérez directement les styles nécessaires à partir de la configuration
-        const timestampStyles = stylesConfig.timestamp.getStyles(processMetadata.isMainProcess, level); 
-        const logLevelStyles = stylesConfig.logLevel.getStyles(processMetadata.isMainProcess, level);
-        const serviceNameStyles = stylesConfig.serviceName.getStyles(processMetadata.isMainProcess, level); 
-        const messageStyles = stylesConfig.message.getStyles(processMetadata.isMainProcess, level);
+        const timestampStyles = stylesConfig.timestamp.getStyles(isMainProcess, level); 
+        const logLevelStyles = stylesConfig.logLevel.getStyles(isMainProcess, level);
+        const serviceNameStyles = stylesConfig.serviceName.getStyles(isMainProcess, level); 
+        const messageStyles = stylesConfig.message.getStyles(isMainProcess, level);
     
         // Formatage des différentes parties du message
         const now = new Date();
         const timestamp = `[${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`;
         const logLevelTag = `[${LogLevel[level]}]`;
-        const serviceNameTag = `[${processMetadata.serviceName}]`;
+        const serviceNameTag = `[${metadata.serviceName}]`;
     
         // Appliquez les styles et la couleur à chaque partie du message
         const formattedTimestamp = this.applyStyle(timestamp, timestampStyles, colorCode);
@@ -35,8 +33,12 @@ export class LoggerStyleService {
         return `${formattedTimestamp} ${formattedLogLevelTag} ${formattedServiceNameTag} - ${formattedMessage}`;
     }
 
-    private getColorCode(metadata: ServiceMetadata, stylesConfig: LoggerStylesConfig): string {
-        const color = metadata.isMainProcess ? stylesConfig.mainProcessColor : stylesConfig.subProcessColor;
+    private isMainProcessMetadata(metadata: IServiceMetadata): boolean {
+        return metadata instanceof MainProcessMetadata;
+    }
+
+    private getColorCode(metadata: IServiceMetadata, stylesConfig: LoggerStylesConfig, isMainProcess: boolean): string {
+        const color = isMainProcess ? stylesConfig.mainProcessColor : stylesConfig.subProcessColor;
         return stylesConfig.colorMapping[color];
     }
 

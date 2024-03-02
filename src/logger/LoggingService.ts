@@ -1,18 +1,20 @@
 import { LoggerConfig } from "../models/LoggerConfig";
 import { LoggerStylesConfig } from "../models/LoggerStylesConfig";
 import { LoggerStyleService } from "./services/styles/LoggerStyleService";
-import ServiceMetadata from "../types/ServiceMetadata";
 import { LogLevel } from "../types/LogLevel";
 import { StyleConfigManager } from "./services/styles/StyleConfigManager";
+import { RegistrationService } from "./services/registration/RegistrationService";
+import { IServiceMetadata } from "../types/ServiceMetadata";
 
 export class LoggingService {
     private static instance: LoggingService | null = null;
     private loggerConfig?: LoggerConfig;
     private loggerStyleService?: LoggerStyleService;
-    private servicesMetadata: ServiceMetadata[] = [];
+    private registrationService: RegistrationService;
 
     // Constructeur privé pour empêcher l'instanciation directe
-    private constructor() {}
+    private constructor() {
+        this.registrationService = RegistrationService.getInstance();}
 
     // Méthode pour obtenir l'instance singleton
     public static getInstance(): LoggingService {
@@ -46,35 +48,32 @@ export class LoggingService {
         this.init(loggerConfig);
     }
 
+    public registerService(metadata: IServiceMetadata): string {
+        return this.registrationService.registerService(metadata);
+    }
+
     // Méthode pour logger les messages
-    public log(metadata: ServiceMetadata, level: LogLevel, message: string): void {
+    public log(serviceName: string, level: LogLevel, message: string): void {
         if (!this.loggerConfig || !this.loggerStyleService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
 
+        // Utilisez RegistrationService pour récupérer les métadonnées du service
+        const metadata = this.registrationService.findServiceMetadata(serviceName);
+        if (!metadata) {
+            console.error(`Service "${serviceName}" not registered.`);
+            return;
+        }
+
         if (this.shouldLog(level)) {
-            this.registerServiceIfNeeded(metadata);
-            const storedMetadata = this.findServiceMetadata(metadata.serviceName);
-            if (storedMetadata) {
-                const formattedMessage = this.loggerStyleService.formatMessage(storedMetadata, level, message);
-                this.processConsoleLog(formattedMessage);
-            }
+            const formattedMessage = this.loggerStyleService.formatMessage(metadata, level, message);
+            this.processConsoleLog(formattedMessage);
         }
     }
 
     // Autres méthodes privées pour le fonctionnement interne du service de log
     private shouldLog(level: LogLevel): boolean {
         return this.loggerConfig ? level >= this.loggerConfig.logLevel : false;
-    }
-
-    public registerServiceIfNeeded(metadata: ServiceMetadata): void {
-        if (!this.findServiceMetadata(metadata.serviceName)) {
-            this.servicesMetadata.push(metadata);
-        }
-    }
-
-    private findServiceMetadata(serviceName: string): ServiceMetadata | undefined {
-        return this.servicesMetadata.find(service => service.serviceName === serviceName);
     }
 
     private processConsoleLog(message: string): void {
