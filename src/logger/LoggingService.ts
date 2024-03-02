@@ -10,11 +10,10 @@ export class LoggingService {
     private static instance: LoggingService | null = null;
     private loggerConfig?: LoggerConfig;
     private loggerStyleService?: LoggerStyleService;
-    private registrationService: RegistrationService;
+    private registrationService?: RegistrationService;
 
     // Constructeur privé pour empêcher l'instanciation directe
-    private constructor() {
-        this.registrationService = RegistrationService.getInstance();}
+    private constructor() {}
 
     // Méthode pour obtenir l'instance singleton
     public static getInstance(): LoggingService {
@@ -29,6 +28,7 @@ export class LoggingService {
         this.loggerConfig = loggerConfig;
         StyleConfigManager.getInstance().updateStyleConfig(loggerConfig);
         this.loggerStyleService = new LoggerStyleService();
+        this.registrationService = new RegistrationService(this.loggerStyleService, this.loggerConfig.loggerMode);
     }
 
     // Méthode statique pour initialiser le service de log
@@ -40,7 +40,7 @@ export class LoggingService {
     // Vérifie si le service de log a été initialisé
     public static isInitialized(): boolean {
         const instance = LoggingService.getInstance();
-        return !!instance.loggerConfig;
+        return !!instance.loggerConfig && !!instance.loggerStyleService && !!instance.registrationService;
     }
 
     // Mise à jour de la configuration du service de log
@@ -49,12 +49,15 @@ export class LoggingService {
     }
 
     public registerService(metadata: IServiceMetadata): string {
+        if(!this.registrationService) {
+            throw new Error("LoggingService is not initialized. Call 'init' method before registering services.");
+        }
         return this.registrationService.registerService(metadata);
     }
 
     // Méthode pour logger les messages
     public log(serviceName: string, level: LogLevel, message: string): void {
-        if (!this.loggerConfig || !this.loggerStyleService) {
+        if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
 

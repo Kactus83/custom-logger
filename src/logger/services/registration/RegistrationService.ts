@@ -1,22 +1,21 @@
+import { LoggerMode } from "../../../types/LoggerMode";
 import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../../types/ServiceMetadata";
+import { LoggerStyleService } from "../styles/LoggerStyleService";
 
 export class RegistrationService {
-    private static instance: RegistrationService | null = null;
+    private loggerStyleService: LoggerStyleService;
+    loggerMode: LoggerMode;
     // Stockage des métadonnées des services sous forme d'arbre pour une recherche rapide
     private servicesHierarchy: Map<string, MainProcessMetadata | SubProcessMetadata> = new Map();
     // Relation entre main processes et leurs subprocesses
     private mainToSubProcesses: Map<string, Array<SubProcessMetadata>> = new Map();
   
-    private constructor() {}
-  
-    public static getInstance(): RegistrationService {
-      if (!RegistrationService.instance) {
-        RegistrationService.instance = new RegistrationService();
-      }
-      return RegistrationService.instance;
+    constructor(loggerStyleService: LoggerStyleService, loggerMode: LoggerMode) {
+      this.loggerStyleService = loggerStyleService;
+      this.loggerMode = loggerMode;
     }
     
-    public registerService(metadata: MainProcessMetadata | SubProcessMetadata): string {
+    public registerService(metadata: IServiceMetadata): string {
       let serviceName = metadata.serviceName;
       let counter = 1;
 
@@ -28,15 +27,18 @@ export class RegistrationService {
       // Mise à jour du nom dans les métadonnées en cas de changement
       metadata.serviceName = serviceName;
 
-      // Enregistrement du service avec le nouveau nom
+      let updatedMetadata: IServiceMetadata;
       if (metadata instanceof MainProcessMetadata) {
-          this.registerMainProcess(metadata);
+          updatedMetadata = this.loggerStyleService.setColorForProcess(metadata, this.loggerMode);
+          this.registerMainProcess(updatedMetadata as MainProcessMetadata);
       } else {
-          this.registerSubProcess(metadata as SubProcessMetadata);
+          const mainProcessMetadata = this.findMainProcessMetadata((metadata as SubProcessMetadata).mainProcessName);
+          updatedMetadata = this.loggerStyleService.setColorForProcess(metadata, this.loggerMode, mainProcessMetadata);
+          this.registerSubProcess(updatedMetadata as SubProcessMetadata);
       }
       
       return serviceName;
-    }
+  }
   
     private registerMainProcess(metadata: MainProcessMetadata): void {
       if (!this.servicesHierarchy.has(metadata.serviceName)) {
@@ -63,10 +65,20 @@ export class RegistrationService {
     public findServiceMetadata(serviceName: string): IServiceMetadata | undefined {
       return this.servicesHierarchy.get(serviceName);
     }
+
+    private findMainProcessMetadata(mainProcessName: string): MainProcessMetadata | undefined {
+      const mainProcessMetadata = this.servicesHierarchy.get(mainProcessName);
+      if (mainProcessMetadata instanceof MainProcessMetadata) {
+          return mainProcessMetadata;
+      }
+      console.error(`Main process ${mainProcessName} not found.`);
+      return undefined;
+  }  
   
     // Méthode pour obtenir les subprocesses d'un main process
     public getSubProcessesOfMainProcess(mainProcessName: string): Array<SubProcessMetadata> | undefined {
       return this.mainToSubProcesses.get(mainProcessName);
     }
+  
   }
   

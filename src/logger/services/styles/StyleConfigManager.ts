@@ -33,8 +33,7 @@ export class StyleConfigManager {
                 styleConfigOptions = dockerOptions;
                 break;
             default:
-                styleConfigOptions = {}; // Configurations par défaut
-                break;
+                return
         }
 
         // Mise à jour de la configuration de style
