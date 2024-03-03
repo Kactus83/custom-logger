@@ -45,8 +45,6 @@ export class LoggerStyleService {
     }
 
     public setColorForProcess(metadata: IServiceMetadata, loggerMode: LoggerMode, mainProcessMetadata?: MainProcessMetadata): IServiceMetadata {
-        // Accéder à la configuration des styles pour obtenir le mappage des couleurs actuel
-        const stylesConfig = StyleConfigManager.getInstance().getLoggerStylesConfig();
         
         // Déterminer la couleur en fonction du mode de journalisation
         switch (loggerMode) {
