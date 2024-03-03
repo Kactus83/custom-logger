@@ -11,7 +11,9 @@ const defaultStyles_Tag: LoggerElementStyles = {
     default: [TerminalStyles.Bright]
 };
 const defaultStyles_Timestamps: LoggerElementStyles = {
-    default: [TerminalStyles.Dim]
+    default: [TerminalStyles.Dim],
+    warn: [TerminalStyles.None],
+    error: [TerminalStyles.Blink]
 };
 
 // Construction de la configuration pour le mode CLASSIC
@@ -54,12 +56,12 @@ export const coloredOptions: LoggerStylesConfigOptions = {
 
 // Construction de la configuration pour le mode DOCKER
 const dockerStyles: LoggerElementStyles = {
-    default: [TerminalStyles.Bright],
+    default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
-    debug: [TerminalStyles.Reset],
-    info: [TerminalStyles.Bright],
-    warn: [TerminalStyles.Blink],
-    error: [TerminalStyles.Reverse]
+    debug: [TerminalStyles.Dim],
+    info: [TerminalStyles.None],
+    warn: [TerminalStyles.None],
+    error: [TerminalStyles.None]
 };
 const dockerStyles_Tags: LoggerElementStyles = {
     default: [TerminalStyles.None],
