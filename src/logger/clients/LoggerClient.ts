@@ -1,26 +1,50 @@
-import { MainProcessMetadata, SubProcessMetadata } from "../../types/ServiceMetadata";
+import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../types/ServiceMetadata";
 import { LogLevel } from "../../types/LogLevel";
 import { LoggingService } from "../LoggingService";
+import { LoggerConfig } from "../../models/LoggerConfig";
+import { LoggerMode } from "../../types/LoggerMode";
+import { MainProcessLoggerConfig } from "../../models/MainProcessLoggerClientConfig";
+import { SubProcessLoggerConfig } from "../../models/SubProcessLoggerClientConfig";
 
-export abstract class LoggerClient {
+export class LoggerClient {
     protected serviceName: string;
     protected mainProcessName?: string;
+    protected loggerMode?: LoggerMode;
+    protected logLevel?: LogLevel;
 
-    constructor(serviceName: string, mainProcessName?: string) {
-        this.serviceName = serviceName;
-        this.mainProcessName = mainProcessName;
-        this.init();
+    constructor(config: MainProcessLoggerConfig | SubProcessLoggerConfig) {
+        if (config instanceof MainProcessLoggerConfig) {
+            this.serviceName = config.serviceName;
+            this.loggerMode = config.loggerMode;
+            this.logLevel = config.logLevel;
+            this.initMainProcess();
+        } else {
+            this.serviceName = config.serviceName;
+            this.mainProcessName = config.mainProcessName;
+            this.initSubProcess();
+        }
         this.register();
     }
 
-    protected abstract init(): void;
-    protected abstract getServiceMetadata(): SubProcessMetadata | MainProcessMetadata;
+    private initMainProcess(): void {
+        if (!LoggingService.isInitialized() && this.loggerMode && this.logLevel) {
+            const loggerConfig = new LoggerConfig(this.logLevel, this.loggerMode);
+            LoggingService.initialize(loggerConfig);
+        }
+    }
 
-    protected register(): void {
-        const metadata = this.getServiceMetadata();
+    private initSubProcess(): void {
+        // Aucune initialisation spécifique requise pour les sous-processus
+    }
+
+    private register(): void {
+        const metadata = this.mainProcessName ? 
+                         new SubProcessMetadata(this.serviceName, this.mainProcessName) : 
+                         new MainProcessMetadata(this.serviceName);
         this.serviceName = LoggingService.getInstance().registerService(metadata);
     }
-    protected log(level: LogLevel, message: string): void {
+
+    public log(level: LogLevel, message: string): void {
         LoggingService.getInstance().log(this.serviceName, level, message);
     }
 }

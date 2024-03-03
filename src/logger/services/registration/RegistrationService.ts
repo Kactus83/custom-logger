@@ -14,6 +14,10 @@ export class RegistrationService {
       this.loggerStyleService = loggerStyleService;
       this.loggerMode = loggerMode;
     }
+
+    public updateLoggerMode(loggerMode: LoggerMode): void {
+      this.loggerMode = loggerMode;
+    };
     
     public registerService(metadata: IServiceMetadata): string {
       let serviceName = metadata.serviceName;

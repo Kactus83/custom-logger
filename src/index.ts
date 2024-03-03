@@ -7,5 +7,5 @@ export * from "./types/TerminalColors";
 export * from "./models/LoggerConfig";
 export * from "./models/LoggerStylesConfig";
 export * from "./models/LoggerStylesConfigLib";
-export * from "./logger/clients/MainProcessLoggerClient";
-export * from "./logger/clients/SubProcessLoggerClient";
+export * from "./models/MainProcessLoggerClientConfig";
+export * from "./models/SubProcessLoggerClientConfig";
