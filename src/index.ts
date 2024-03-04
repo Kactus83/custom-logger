@@ -9,3 +9,5 @@ export * from "./models/LoggerStylesConfig";
 export * from "./models/LoggerStylesConfigLib";
 export * from "./models/MainProcessLoggerClientConfig";
 export * from "./models/SubProcessLoggerClientConfig";
+export * from "./logger/clients/MainProcessClient";
+export * from "./logger/clients/SubProcessClient";  

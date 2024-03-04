@@ -5,12 +5,17 @@ import { LogLevel } from "../types/LogLevel";
 import { StyleConfigManager } from "./services/styles/StyleConfigManager";
 import { RegistrationService } from "./services/registration/RegistrationService";
 import { IServiceMetadata } from "../types/ServiceMetadata";
+import { ProcessDatabase } from "../models/process/ProcessDatabase";
+import { ProcessesColorsService } from "./services/styles/ProcessesColorsService";
 
 export class LoggingService {
     private static instance: LoggingService | null = null;
+    private processDatabase: ProcessDatabase = new ProcessDatabase();
     private loggerConfig?: LoggerConfig;
     private loggerStyleService?: LoggerStyleService;
+    private processesColorsService?: ProcessesColorsService;
     private registrationService?: RegistrationService;
+
 
     // Constructeur privé pour empêcher l'instanciation directe
     private constructor() {}
@@ -28,7 +33,8 @@ export class LoggingService {
         this.loggerConfig = loggerConfig;
         StyleConfigManager.getInstance().updateStyleConfig(loggerConfig);
         this.loggerStyleService = new LoggerStyleService();
-        this.registrationService = new RegistrationService(this.loggerStyleService, this.loggerConfig.loggerMode);
+        this.processesColorsService = new ProcessesColorsService(this.loggerConfig.loggerMode);
+        this.registrationService = new RegistrationService(this.processDatabase, this.processesColorsService);
     }
 
     // Méthode statique pour initialiser le service de log
@@ -40,7 +46,7 @@ export class LoggingService {
     // Vérifie si le service de log a été initialisé
     public static isInitialized(): boolean {
         const instance = LoggingService.getInstance();
-        return !!instance.loggerConfig && !!instance.loggerStyleService && !!instance.registrationService;
+        return !!instance.loggerConfig && !!instance.loggerStyleService && !!instance.registrationService && !!instance.processesColorsService;
     }
 
     // Mise à jour de la configuration du service de log
@@ -56,20 +62,20 @@ export class LoggingService {
     }
 
     // Méthode pour logger les messages
-    public log(serviceName: string, level: LogLevel, message: string): void {
-        if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService) {
+    public log(processId: string, level: LogLevel, message: string): void {
+        if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService || !this.processesColorsService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
 
         // Utilisez RegistrationService pour récupérer les métadonnées du service
-        const metadata = this.registrationService.findServiceMetadata(serviceName);
-        if (!metadata) {
-            console.error(`Service "${serviceName}" not registered.`);
+        const processNode = this.processDatabase.findProcessById(processId);
+        if (!processNode) {
+            console.error(`Process with ID "${processId}" not registered.`);
             return;
         }
 
         if (this.shouldLog(level)) {
-            const formattedMessage = this.loggerStyleService.formatMessage(metadata, level, message);
+            const formattedMessage = this.loggerStyleService.formatMessage(processNode.metadata, level, message);
             this.processConsoleLog(formattedMessage);
         }
     }

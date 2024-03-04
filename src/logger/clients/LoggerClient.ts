@@ -1,50 +1,20 @@
-import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../types/ServiceMetadata";
 import { LogLevel } from "../../types/LogLevel";
 import { LoggingService } from "../LoggingService";
-import { LoggerConfig } from "../../models/LoggerConfig";
-import { LoggerMode } from "../../types/LoggerMode";
-import { MainProcessLoggerConfig } from "../../models/MainProcessLoggerClientConfig";
-import { SubProcessLoggerConfig } from "../../models/SubProcessLoggerClientConfig";
 
-export class LoggerClient {
+export abstract class LoggerClient {
+    public processId?: string;
     protected serviceName: string;
-    protected mainProcessName?: string;
-    protected loggerMode?: LoggerMode;
-    protected logLevel?: LogLevel;
 
-    constructor(config: MainProcessLoggerConfig | SubProcessLoggerConfig) {
-        if (config instanceof MainProcessLoggerConfig) {
-            this.serviceName = config.serviceName;
-            this.loggerMode = config.loggerMode;
-            this.logLevel = config.logLevel;
-            this.initMainProcess();
-        } else {
-            this.serviceName = config.serviceName;
-            this.mainProcessName = config.mainProcessName;
-            this.initSubProcess();
-        }
-        this.register();
-    }
-
-    private initMainProcess(): void {
-        if (!LoggingService.isInitialized() && this.loggerMode && this.logLevel) {
-            const loggerConfig = new LoggerConfig(this.logLevel, this.loggerMode);
-            LoggingService.initialize(loggerConfig);
-        }
-    }
-
-    private initSubProcess(): void {
-        // Aucune initialisation spécifique requise pour les sous-processus
-    }
-
-    private register(): void {
-        const metadata = this.mainProcessName ? 
-                         new SubProcessMetadata(this.serviceName, this.mainProcessName) : 
-                         new MainProcessMetadata(this.serviceName);
-        this.serviceName = LoggingService.getInstance().registerService(metadata);
+    constructor(serviceName: string) {
+        this.serviceName = serviceName;
     }
 
     public log(level: LogLevel, message: string): void {
-        LoggingService.getInstance().log(this.serviceName, level, message);
+        if(!this.processId) {
+            throw new Error("Process ID is not set. Please init the client before logging messages.");
+        }
+        // Utilisation du service de journalisation pour enregistrer le message
+        // avec l'ID du processus pour identifier le service source
+        LoggingService.getInstance().log(this.processId, level, message);
     }
 }
