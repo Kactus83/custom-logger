@@ -30,6 +30,7 @@ export class LoggerStyleService {
         const isMainProcess = metadata instanceof MainProcessMetadata;
 
         const timestamp = this.loggerConfig.showTimestamp ? `[${new Date().toTimeString().split(' ')[0]}]` : "";
+        const logLevelTag = this.getAlignedLogLevelTag(level);
         const parentTag = parentMetadata ? `[${parentMetadata.serviceName}] -->` : "[MAIN PROCESS]";
         const serviceNameTag = `[${metadata.serviceName}]`;
         const separator = "-";
@@ -41,8 +42,6 @@ export class LoggerStyleService {
         const separatorStyles = stylesConfig.message.getStyles(isMainProcess, level); // créer style unique si necessaire
         const messageStyles = stylesConfig.message.getStyles(isMainProcess, level);
 
-        const logLevelTag = `[${LogLevel[level]}]`;
-
         const formattedTimestamp = this.applyStyle(timestamp, timestampStyles, colorCode);
         const formattedLogLevelTag = this.applyStyle(logLevelTag, logLevelStyles, colorCode);
         const formattedParentTag = this.loggerConfig.showHierarchy ? this.applyStyle(parentTag, parentTagStyles, colorCode) : "";
@@ -53,8 +52,11 @@ export class LoggerStyleService {
         return `${formattedTimestamp} ${formattedLogLevelTag} ${formattedParentTag} ${formattedServiceNameTag} ${formattedSeparator} ${formattedMessage}`;
     }
 
-    private isMainProcessMetadata(metadata: IServiceMetadata): boolean {
-        return metadata instanceof MainProcessMetadata;
+    private getAlignedLogLevelTag(level: LogLevel): string {
+        const maxLogLevelTagLength = Math.max(...Object.values(LogLevel).filter(value => typeof value === 'string').map(tag => `[${tag}]`.length));
+        let logLevelTag = `[${LogLevel[level]}]`;
+        logLevelTag = logLevelTag.padEnd(maxLogLevelTagLength, ' ');
+        return logLevelTag;
     }
 
     private applyStyle(text: string, styles: TerminalStyles[], colorCode: string): string {
