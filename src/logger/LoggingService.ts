@@ -62,14 +62,15 @@ export class LoggingService {
     }
 
     // Méthode pour logger les messages
-    public log(processId: string, level: LogLevel, message: string): void {
+    public log(processId: string, level: LogLevel, ...messages: any[]): void {
         if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService || !this.processesColorsService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
 
         if (this.shouldLog(level)) {
-            const formattedMessage = this.loggerStyleService.formatMessage(processId, level, message);
-            this.processConsoleLog(formattedMessage);
+            const formattedMessage = MessageFormatterService.formatMessages(messages);
+            const styledMessage = this.loggerStyleService.formatMessage(processId, level, formattedMessage);
+            this.processConsoleLog(styledMessage);
         }
     }
 
