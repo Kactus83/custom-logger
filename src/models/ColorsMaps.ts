@@ -9,8 +9,7 @@ export const DarkColorMapping: { [key in ColorChoice]: string } = {
     Blue: TerminalDarkColors.Blue,
     Magenta: TerminalDarkColors.Magenta,
     Cyan: TerminalDarkColors.Cyan,
-    White: TerminalDarkColors.White,
-    Random: TerminalDarkColors.Black // Par défaut
+    White: TerminalDarkColors.White
 };
 
 export const LightColorMapping: { [key in ColorChoice]: string } = {
@@ -21,6 +20,5 @@ export const LightColorMapping: { [key in ColorChoice]: string } = {
     Blue: TerminalLightColors.Blue,
     Magenta: TerminalLightColors.Magenta,
     Cyan: TerminalLightColors.Cyan,
-    White: TerminalLightColors.White,
-    Random: TerminalLightColors.White // Par défaut
+    White: TerminalLightColors.White
 };

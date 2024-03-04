@@ -41,13 +41,12 @@ export enum TerminalLightColors {
 }
 
 export enum ColorChoice {
-    Black = 'Black',
-    Red = 'Red',
-    Green = 'Green',
-    Yellow = 'Yellow',
     Blue = 'Blue',
-    Magenta = 'Magenta',
+    Green = 'Green',
     Cyan = 'Cyan',
+    Magenta = 'Magenta',
+    Yellow = 'Yellow',
+    Red = 'Red',
     White = 'White',
-    Random = 'Random'
+    Black = 'Black',
 }

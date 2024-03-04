@@ -26,7 +26,6 @@ export class ProcessesColorsService {
                 }
                 break;
             case LoggerMode.DOCKER:
-                // La logique pour le mode DOCKER reste inchangée, mais on pourrait l'adapter si nécessaire
                 if (metadata instanceof SubProcessMetadata && parentProcessMetadata) {
                     metadata.color = parentProcessMetadata.color ?? this.assignUniqueColor();
                 } else {
@@ -38,13 +37,17 @@ export class ProcessesColorsService {
         }
         return metadata;
     }
-    
+
     private initializeColorUsageCount() {
-        Object.values(ColorChoice).forEach(color => {
-            this.colorUsageCount.set(color, 0);
-        });
+        // Exclure Black, White et Random de la liste des couleurs initiales
+        const excludedColors = [ColorChoice.Black, ColorChoice.White];
+        Object.values(ColorChoice)
+            .filter(color => !excludedColors.includes(color))
+            .forEach(color => {
+                this.colorUsageCount.set(color, 0);
+            });
     }
-    
+
     private assignUniqueColor(): ColorChoice {
         let leastUsedColor: ColorChoice = ColorChoice.Red;
         let leastUsage = Infinity;
@@ -56,6 +59,7 @@ export class ProcessesColorsService {
             }
         });
 
+        // Mettre à jour le compteur d'utilisation pour la couleur choisie
         this.colorUsageCount.set(leastUsedColor, this.colorUsageCount.get(leastUsedColor)! + 1);
 
         return leastUsedColor;

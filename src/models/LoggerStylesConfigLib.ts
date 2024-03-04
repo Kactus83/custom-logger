@@ -77,6 +77,6 @@ export const dockerOptions: LoggerStylesConfigOptions = {
     serviceName: new LoggerElementConfig(dockerStyles_Tags, dockerStyles_Tags),
     message: new LoggerElementConfig(dockerStyles, dockerStyles),
     colorMapping: DarkColorMapping,
-    mainProcessColor: ColorChoice.Random,
-    subProcessColor: ColorChoice.Random
+    mainProcessColor: ColorChoice.White,
+    subProcessColor: ColorChoice.White
 };
