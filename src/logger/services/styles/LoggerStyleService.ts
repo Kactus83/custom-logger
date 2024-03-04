@@ -33,7 +33,7 @@ export class LoggerStyleService {
         const timestamp = this.loggerConfig.showTimestamp ? this.formatTimestamp() : "";
         const logLevelTag = this.getAlignedLogLevelTag(level);
         const parentTag = this.getServiceTag(processID);
-        const hierarchySeparator = this.getHierarchySeparatorWithAlignment(timestamp, logLevelTag);
+        const hierarchySeparator = this.getHierarchySeparatorWithAlignment(timestamp);
         const serviceNameTag = this.formatServiceTag(metadata.serviceName);
         const separator = "-";
 
@@ -53,7 +53,17 @@ export class LoggerStyleService {
         const formattedSeparator = this.applyStyle(separator, separatorStyles, colorCode);
         const formattedMessage = this.applyStyle(message, messageStyles, colorCode);
 
-        const finalMessage = `${formattedTimestamp} ${formattedLogLevelTag} ${formattedParentTag}${formatedHierarchySeparator}${formattedServiceNameTag} ${formattedSeparator} ${formattedMessage}`;
+        // Construit le message final en conditionnant l'inclusion de serviceNameTag
+        let finalMessage = "";
+        if (this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED && this.loggerConfig.showHierarchy) {
+            // En mode détaillé avec hiérarchie, inclut la hiérarchie complète sans répéter le tag du service actuel
+            finalMessage = `${formattedTimestamp} ${formattedLogLevelTag} ${formattedParentTag}${formatedHierarchySeparator} ${formattedSeparator} ${formattedMessage}`;
+        } else {
+            // Dans les autres cas, inclut le tag du service actuel
+            finalMessage = `${formattedTimestamp} ${formattedLogLevelTag} ${formattedParentTag}${formatedHierarchySeparator}${formattedServiceNameTag} ${formattedSeparator} ${formattedMessage}`;
+        }
+        
+        // Ajoute un saut de ligne pour les logs en mode détaillé
         return this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? finalMessage + "\n" : finalMessage;
     }
 
@@ -105,7 +115,7 @@ export class LoggerStyleService {
             const node = this.processDatabase.findProcessById(currentID);
             if (!node) break;
     
-            const formattedTag = this.formatServiceTag(node.metadata.serviceName);
+            const formattedTag = this.formatServiceTag(node.metadata.serviceName, false);
             hierarchy = formattedTag + (hierarchy ? " -> " + hierarchy : "");
     
             if (node.metadata instanceof SubProcessMetadata && node.metadata.mainProcessId) {
@@ -118,28 +128,33 @@ export class LoggerStyleService {
         return hierarchy;
     }
 
-    private formatServiceTag(serviceName: string): string {
-        // Prendre le minimum entre la longueur maximale configurée et la longueur maximale enregistrée dans la base de données
-        const maxLength = Math.min(this.processDatabase.getMaxServiceNameLength() + 2, this.loggerConfig.tagsMaxLength + 2); // +2 pour les crochets
-        let formattedName = `[${serviceName}]`;
-    
-        // Tronquer le nom de service si nécessaire pour respecter la longueur maximale
-        if (formattedName.length > maxLength) {
-            formattedName = `[${serviceName.substring(0, maxLength - 3)}...]`; // -3 pour inclure les points de suspension
+    private formatServiceTag(serviceName: string, adjustLength: boolean = true): string {
+        if (adjustLength) {
+            // Prendre le minimum entre la longueur maximale configurée et la longueur maximale enregistrée dans la base de données
+            const maxLength = Math.min(this.processDatabase.getMaxServiceNameLength() + 2, this.loggerConfig.tagsMaxLength + 2); // +2 pour les crochets
+            let formattedName = `[${serviceName}]`;
+            
+            // Tronquer le nom de service si nécessaire pour respecter la longueur maximale
+            if (formattedName.length > maxLength) {
+                formattedName = `[${serviceName.substring(0, maxLength - 3)}...]`; // -3 pour inclure les points de suspension
+            }
+            
+            // Compléter le tag pour qu'il atteigne la longueur maximale, en assurant l'alignement
+            return formattedName.padEnd(maxLength, ' ');
+        } else {
+            // Laisser le tag intact sans ajustement de longueur
+            return `[${serviceName}]`;
         }
+    }
+
+    private getHierarchySeparatorWithAlignment(formattedTimestamp: string): string {
+        let separator = this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? "\n \n" : " -> ";
     
-        // Compléter le tag pour qu'il atteigne la longueur maximale, en assurant l'alignement
-        return formattedName.padEnd(maxLength, ' ');
-    } 
-    
-    private getHierarchySeparatorWithAlignment(formattedTimestamp: string, formattedLogLevelTag: string): string {
-        let separator = this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? "\n" : " -> ";
-    
-        if (this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED) {
-            // Calcul de l'espace nécessaire pour l'alignement
-            const alignmentLength = formattedTimestamp.length + formattedLogLevelTag.length + 2; // +2 pour les espaces entre les elements
-            separator += ' '.repeat(alignmentLength);
-        }
+        // if (this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED) {
+        //     // Calcul de l'espace nécessaire pour l'alignement
+        //     const alignmentLength = formattedTimestamp.length + 1; // +1 pour l'espace apres le timestamp
+        //     separator += ' '.repeat(alignmentLength);
+        // }
     
         return separator;
     }
