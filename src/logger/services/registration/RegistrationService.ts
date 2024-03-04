@@ -14,18 +14,31 @@ export class RegistrationService {
 
     public registerService(metadata: IServiceMetadata): string {
 
-        // Configuration de la couleur et autres propriétés spécifiques avant l'enregistrement
-        const updatedMetadata = this.processesColorsService.setColorForProcess(metadata);
+        let updatedMetadata: IServiceMetadata;
 
-        // Enregistrement du processus dans la base de données
-        if (updatedMetadata instanceof MainProcessMetadata) {
-            const id = this.processDatabase.addMainProcess(updatedMetadata);
-            return id;
-        } else if (updatedMetadata instanceof SubProcessMetadata && updatedMetadata.mainProcessName) {
-            const id = this.processDatabase.addSubProcess(updatedMetadata.mainProcessName, updatedMetadata);
-            return id;
-        } else {
-            throw new Error(`Invalid process metadata or parent name.`);
+        if(metadata instanceof SubProcessMetadata && metadata.mainProcessId) {
+            // Récupération des métadonnées du parent si spécifié
+            const parentMetadata = metadata.mainProcessId ? this.processDatabase.findProcessById(metadata.mainProcessId)?.metadata : undefined;
+            // Mise à jour de la couleur du processus en tenant compte des métadonnées du parent si présentes
+            updatedMetadata = this.processesColorsService.setColorForProcess(metadata, parentMetadata);
+        }else{
+            // Mise à jour de la couleur du processus sans métadonnées du parent 
+            updatedMetadata = this.processesColorsService.setColorForProcess(metadata);    
         }
+
+        // Enregistrement du processus dans la base de données et retour de l'ID attribué
+        let id: string;
+        if (updatedMetadata instanceof MainProcessMetadata) {
+            id = this.processDatabase.addMainProcess(updatedMetadata);
+        } else if (updatedMetadata instanceof SubProcessMetadata) {
+            if (!updatedMetadata.mainProcessId) {
+                throw new Error("Parent process ID must be provided for sub-processes.");
+            }
+            id = this.processDatabase.addSubProcess(updatedMetadata.mainProcessId, updatedMetadata);
+        } else {
+            throw new Error("Invalid process metadata.");
+        }
+
+        return id;
     }
 }

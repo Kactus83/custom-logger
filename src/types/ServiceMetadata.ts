@@ -20,12 +20,12 @@ export class MainProcessMetadata implements IServiceMetadata {
 // Classe pour les métadonnées des subprocesses
 export class SubProcessMetadata implements IServiceMetadata {
   serviceName: string;
-  mainProcessName: string;
+  mainProcessId: string;
   color?: ColorChoice;
 
-  constructor(serviceName: string, mainProcessName: string, color?: ColorChoice) {
+  constructor(serviceName: string, mainProcessId: string, color?: ColorChoice) {
     this.serviceName = serviceName;
-    this.mainProcessName = mainProcessName;
+    this.mainProcessId = mainProcessId;
     this.color = color;
   }
 }
