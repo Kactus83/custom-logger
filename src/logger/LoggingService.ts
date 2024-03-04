@@ -32,7 +32,7 @@ export class LoggingService {
     public init(loggerConfig: LoggerConfig): void {
         this.loggerConfig = loggerConfig;
         StyleConfigManager.getInstance().updateStyleConfig(loggerConfig);
-        this.loggerStyleService = new LoggerStyleService();
+        this.loggerStyleService = new LoggerStyleService(this.processDatabase, this.loggerConfig);
         this.processesColorsService = new ProcessesColorsService(this.loggerConfig.loggerMode);
         this.registrationService = new RegistrationService(this.processDatabase, this.processesColorsService);
     }
@@ -67,15 +67,8 @@ export class LoggingService {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
 
-        // Utilisez RegistrationService pour récupérer les métadonnées du service
-        const processNode = this.processDatabase.findProcessById(processId);
-        if (!processNode) {
-            console.error(`Process with ID "${processId}" not registered.`);
-            return;
-        }
-
         if (this.shouldLog(level)) {
-            const formattedMessage = this.loggerStyleService.formatMessage(processNode.metadata, level, message);
+            const formattedMessage = this.loggerStyleService.formatMessage(processId, level, message);
             this.processConsoleLog(formattedMessage);
         }
     }
