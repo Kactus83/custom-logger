@@ -7,6 +7,7 @@ import { RegistrationService } from "./services/registration/RegistrationService
 import { IServiceMetadata } from "../types/ServiceMetadata";
 import { ProcessDatabase } from "../models/process/ProcessDatabase";
 import { ProcessesColorsService } from "./services/styles/ProcessesColorsService";
+import { MessageFormatterService } from "./services/format/MessageFormatterService";
 
 export class LoggingService {
     private static instance: LoggingService | null = null;
@@ -66,13 +67,12 @@ export class LoggingService {
         if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService || !this.processesColorsService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
-
+    
         if (this.shouldLog(level)) {
-            const formattedMessage = MessageFormatterService.formatMessages(messages);
-            const styledMessage = this.loggerStyleService.formatMessage(processId, level, formattedMessage);
-            this.processConsoleLog(styledMessage);
+            const formattedMessage = this.loggerStyleService.formatMessage(processId, level, MessageFormatterService.formatMessages(...messages));
+            this.processConsoleLog(formattedMessage);
         }
-    }
+    }       
 
     // Autres méthodes privées pour le fonctionnement interne du service de log
     private shouldLog(level: LogLevel): boolean {
