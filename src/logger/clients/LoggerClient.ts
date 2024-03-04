@@ -9,7 +9,7 @@ export abstract class LoggerClient {
         this.serviceName = serviceName;
     }
 
-    public log(level: LogLevel, ...messages: any[]): void {
+    public log(level: LogLevel, ...messages: (string | number | boolean | object)[]): void {
         if(!this.processId) {
             throw new Error("Process ID is not set. Please init the client before logging messages.");
         }

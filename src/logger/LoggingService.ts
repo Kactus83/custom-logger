@@ -63,7 +63,7 @@ export class LoggingService {
     }
 
     // Méthode pour logger les messages
-    public log(processId: string, level: LogLevel, ...messages: any[]): void {
+    public log(processId: string, level: LogLevel, ...messages: (string | number | boolean | object)[]): void {
         if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService || !this.processesColorsService) {
             throw new Error("LoggingService is not initialized. Call 'init' method before logging.");
         }
