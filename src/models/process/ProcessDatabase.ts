@@ -5,6 +5,7 @@ import { ProcessTree } from "./ProcessTree";
 export class ProcessDatabase {
     private trees: Map<string, ProcessTree>;
     private nameCounter: Map<string, number>; 
+    private maxServiceNameLength: number = 0;
 
     constructor() {
         this.trees = new Map();
@@ -25,6 +26,7 @@ export class ProcessDatabase {
         const newTree = new ProcessTree();
         newTree.addProcess(null, metadata, id);
         this.trees.set(id, newTree);
+        this.updateMaxServiceNameLength(metadata.serviceName);
         return id;
     }
 
@@ -34,6 +36,7 @@ export class ProcessDatabase {
             const parentProcess = tree.findProcessById(parentId);
             if (parentProcess) {
                 tree.addProcess(parentId, metadata, id);
+                this.updateMaxServiceNameLength(metadata.serviceName);
                 return id;
             }
         }
@@ -48,5 +51,17 @@ export class ProcessDatabase {
             }
         }
         return undefined;
+    }
+    
+    // Méthode pour mettre à jour la longueur maximale du nom de service
+    private updateMaxServiceNameLength(serviceName: string): void {
+        if (serviceName.length > this.maxServiceNameLength) {
+            this.maxServiceNameLength = serviceName.length;
+        }
+    }
+
+    // Méthode pour récupérer la longueur maximale du nom de service
+    public getMaxServiceNameLength(): number {
+        return this.maxServiceNameLength;
     }
 }

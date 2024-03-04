@@ -1,16 +1,20 @@
+import { LoggerDetailsLevel } from "../types/LoggerDetailsLevel";
 import { LoggerMode } from "../types/LoggerMode";
 import { LogLevel } from "../types/LogLevel";
 
 export class LoggerConfig {
     logLevel: LogLevel;
     loggerMode: LoggerMode;
+    detailsLevel: LoggerDetailsLevel;
     showHierarchy: boolean;
     showTimestamp: boolean;
+    tagsMaxLength: number = 20;
 
 
-    constructor(logLevel: LogLevel = LogLevel.INFO, loggerMode: LoggerMode = LoggerMode.CLASSIC, showHierarchy: boolean = false, showTimestamp: boolean = true) {
+    constructor(logLevel: LogLevel = LogLevel.INFO, loggerMode: LoggerMode = LoggerMode.CLASSIC, detailLevel: LoggerDetailsLevel = LoggerDetailsLevel.DEFAULT, showHierarchy: boolean = false, showTimestamp: boolean = true) {
         this.logLevel = logLevel;
         this.loggerMode = loggerMode;
+        this.detailsLevel = detailLevel;
         this.showHierarchy = showHierarchy;
         this.showTimestamp = showTimestamp;
     }
