@@ -3,15 +3,28 @@ import { LoggerMode } from "../../../types/LoggerMode";
 import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../../types/ServiceMetadata";
 import { ProcessesColorsService } from "../styles/ProcessesColorsService";
 
+/**
+ * Gère l'enregistrement des services et processus dans la base de données des processus.
+ */
 export class RegistrationService {
     private processDatabase: ProcessDatabase;
     private processesColorsService: ProcessesColorsService;
 
+    /**
+     * Constructeur de RegistrationService.
+     * @param {ProcessDatabase} processDatabase - Base de données des process pour l'enregistrement.
+     * @param {ProcessesColorsService} processesColorsService - Service pour attribuer des couleurs aux processus.
+     */
     constructor(processDatabase: ProcessDatabase, processesColorsService: ProcessesColorsService) {
         this.processDatabase = processDatabase;
         this.processesColorsService = processesColorsService;
     }
 
+    /**
+     * Enregistre un service ou un sous-processus et lui attribue un ID.
+     * @param {IServiceMetadata} metadata - Métadonnées du service ou sous-processus.
+     * @returns {string} ID attribué au service ou sous-processus enregistré.
+     */
     public registerService(metadata: IServiceMetadata): string {
 
         let updatedMetadata: IServiceMetadata;

@@ -7,16 +7,34 @@ import { ProcessDatabase } from "../../../models/process/ProcessDatabase";
 import { LoggerConfig } from "../../../models/LoggerConfig";
 import { LoggerDetailsLevel } from "../../../types/LoggerDetailsLevel";
 
-
+/**
+ * LoggerStyleService is responsible for styling and formatting the log messages
+ * based on the process hierarchy and logger configuration. It utilizes style configurations
+ * to apply terminal styles and formats messages to include timestamps, log level tags,
+ * service names, and hierarchical structures as per the logger details level.
+ */
 export class LoggerStyleService {
     private processDatabase: ProcessDatabase;
     private loggerConfig: LoggerConfig;
 
+    /**
+     * Constructeur de LoggerStyleService.
+     * @param {ProcessDatabase} processDatabase - Base de données des process pour trouver les métadonnées.
+     * @param {LoggerConfig} loggerConfig - Configuration actuelle du logger.
+     */
     constructor(processDatabase: ProcessDatabase, loggerConfig: LoggerConfig) {
         this.processDatabase = processDatabase;
         this.loggerConfig = loggerConfig;
     }
 
+    
+    /**
+     * Formate un message de log basé sur l'ID du processus, le niveau de log et le message lui-même.
+     * @param {string} processID - ID du processus.
+     * @param {LogLevel} level - Niveau de log.
+     * @param {string} message - Message à logger.
+     * @returns {string} Message formaté.
+     */
     public formatMessage(processID: string, level: LogLevel, message: string): string {
         const processNode = this.processDatabase.findProcessById(processID);
         if (!processNode) {
@@ -67,6 +85,10 @@ export class LoggerStyleService {
         return this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? finalMessage + "\n" : finalMessage;
     }
 
+    /**
+     * Formats the current timestamp for inclusion in the log message.
+     * @returns {string} The formatted timestamp.
+     */
     private formatTimestamp(): string {
         if (this.loggerConfig.showTimestamp) {
             const now = new Date();
@@ -75,6 +97,11 @@ export class LoggerStyleService {
         return "";
     }
 
+    /**
+     * Aligns the log level tag to ensure consistent width across messages.
+     * @param {LogLevel} level - The log level to format.
+     * @returns {string} The aligned log level tag.
+     */
     private getAlignedLogLevelTag(level: LogLevel): string {
         const maxLogLevelTagLength = Math.max(...Object.values(LogLevel).filter(value => typeof value === 'string').map(tag => `[${tag}]`.length));
         let logLevelTag = `[${LogLevel[level]}]`;
@@ -82,6 +109,12 @@ export class LoggerStyleService {
         return logLevelTag;
     }
 
+    /**
+     * Generates the appropriate service tag based on the process hierarchy and
+     * the logger details level.
+     * @param {string} processID - The unique identifier for the logging process.
+     * @returns {string} The formatted service tag or hierarchy.
+     */
     private getServiceTag(processID: string): string {
         if (!this.loggerConfig.showHierarchy) {
             return ""; // Si showHierarchy est false, retourne une chaîne vide
@@ -107,6 +140,11 @@ export class LoggerStyleService {
         }
     }    
 
+    /**
+     * Builds a complete hierarchy string for the given process by traversing its parentage.
+     * @param {string} processID - The unique identifier for the logging process.
+     * @returns {string} The complete hierarchy string.
+     */
     private buildCompleteHierarchyTags(processID: string): string {
         let hierarchy = "";
         let currentID = processID;
@@ -128,6 +166,12 @@ export class LoggerStyleService {
         return hierarchy;
     }
 
+    /**
+     * Formats the service name tag, adjusting its length according to configuration.
+     * @param {string} serviceName - The name of the service.
+     * @param {boolean} adjustLength - Whether to adjust the length of the tag.
+     * @returns {string} The formatted service name tag.
+     */
     private formatServiceTag(serviceName: string, adjustLength: boolean = true): string {
         if (adjustLength) {
             // Prendre le minimum entre la longueur maximale configurée et la longueur maximale enregistrée dans la base de données
@@ -147,6 +191,11 @@ export class LoggerStyleService {
         }
     }
 
+    /**
+     * Determines the hierarchy separator based on the logger details level and formats it accordingly.
+     * @param {string} formattedTimestamp - The formatted timestamp to align with.
+     * @returns {string} The formatted hierarchy separator.
+     */
     private getHierarchySeparatorWithAlignment(formattedTimestamp: string): string {
         let separator = this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? "\n \n" : " -> ";
     
@@ -154,6 +203,13 @@ export class LoggerStyleService {
     }
               
 
+    /**
+     * Applies the specified styles to the text and wraps it with the appropriate color code.
+     * @param {string} text - The text to style.
+     * @param {TerminalStyles[]} styles - The terminal styles to apply.
+     * @param {string} colorCode - The terminal color code.
+     * @returns {string} The styled text.
+     */
     private applyStyle(text: string, styles: TerminalStyles[], colorCode: string): string {
         const styleCodes = styles.join('');
         return `${colorCode}${styleCodes}${text}${TerminalStyles.Reset}`;
