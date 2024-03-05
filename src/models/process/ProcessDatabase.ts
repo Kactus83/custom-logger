@@ -19,6 +19,14 @@ export class ProcessDatabase {
     }
 
     /**
+     * Provides access to the collection of process trees.
+     * @returns {Map<string, ProcessTree>} A map of process trees keyed by their root process ID.
+     */
+    public getTrees(): Map<string, ProcessTree> {
+        return this.trees;
+    }
+
+    /**
      * Generates a unique identifier for a given process name.
      * @param {string} name - The name of the process.
      * @returns {string} A unique identifier for the process.

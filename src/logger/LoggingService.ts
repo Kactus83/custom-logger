@@ -92,6 +92,18 @@ export class LoggingService {
         }
         return this.registrationService.registerService(metadata);
     }
+    /**
+     * Displays the hierarchical structure of all process trees managed by the logging service.
+     */
+    public displayProcessTrees(): void {
+        if (!this.processTreeVisualizationService) {
+            console.error("ProcessTreeVisualizationService is not initialized.");
+            return;
+        }
+
+        // Appel à la méthode displayProcessTrees du ProcessTreeVisualizationService
+        this.processTreeVisualizationService.displayProcessTrees();
+    }
 
     /**
      * Main method for logging messages. Accepts various types of messages and processes them accordingly.

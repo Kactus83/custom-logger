@@ -27,4 +27,11 @@ export abstract class LoggerClient {
         }
         LoggingService.getInstance().log(this.processId, level, messages);
     }
+
+    /**
+     * Triggers the display of the process trees to illustrate the hierarchical structure of processes.
+     */
+    public displayProcessTrees(): void {
+        LoggingService.getInstance().displayProcessTrees();
+    }
 }
