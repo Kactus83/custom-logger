@@ -3,11 +3,12 @@ import { LoggerStylesConfig } from "../models/LoggerStylesConfig";
 import { LoggerStyleService } from "./services/styles/LoggerStyleService";
 import { LogLevel } from "../types/LogLevel";
 import { StyleConfigManager } from "./services/styles/StyleConfigManager";
-import { RegistrationService } from "./services/registration/RegistrationService";
+import { RegistrationService } from "./services/processes/RegistrationService";
 import { IServiceMetadata } from "../types/ServiceMetadata";
 import { ProcessDatabase } from "../models/process/ProcessDatabase";
 import { ProcessesColorsService } from "./services/styles/ProcessesColorsService";
 import { MessageFormatterService } from "./services/format/MessageFormatterService";
+import { ProcessTreeVisualizationService } from "./services/processes/ProcessTreeVisualizationService";
 
 /**
  * Class LoggingService - Centralized logging service for the application.
@@ -20,6 +21,7 @@ export class LoggingService {
     private loggerStyleService?: LoggerStyleService;
     private processesColorsService?: ProcessesColorsService;
     private registrationService?: RegistrationService;
+    private processTreeVisualizationService?: ProcessTreeVisualizationService;
 
 
     /**
@@ -49,6 +51,7 @@ export class LoggingService {
         this.loggerStyleService = new LoggerStyleService(this.processDatabase, this.loggerConfig);
         this.processesColorsService = new ProcessesColorsService(this.loggerConfig.loggerMode);
         this.registrationService = new RegistrationService(this.processDatabase, this.processesColorsService);
+        this.processTreeVisualizationService = new ProcessTreeVisualizationService(this.processDatabase);
     }
 
     /**
