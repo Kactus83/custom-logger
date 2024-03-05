@@ -23,6 +23,9 @@ export class ProcessDatabase {
      * @returns {Map<string, ProcessTree>} A map of process trees keyed by their root process ID.
      */
     public getTrees(): Map<string, ProcessTree> {
+        if(!this.trees) {
+            throw new Error("Process trees are not initialized.");
+        }
         return this.trees;
     }
 
