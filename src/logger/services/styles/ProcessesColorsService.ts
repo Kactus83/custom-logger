@@ -2,15 +2,29 @@ import { LoggerMode } from "../../../types/LoggerMode";
 import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../../../types/ServiceMetadata";
 import { ColorChoice } from "../../../types/TerminalColors";
 
+/**
+ * Service en charge de l'attribution des couelurs aux différents process.
+ * Attribue des couleurs aux processus en fonction du mode de journalisation.
+ */
 export class ProcessesColorsService {
     private colorUsageCount: Map<ColorChoice, number> = new Map();
     private loggerMode: LoggerMode;
 
+    /**
+     * Initialise le service avec le mode de journalisation spécifié.
+     * @param {LoggerMode} loggerMode - Le mode de journalisation (CLASSIC, COLORED, DOCKER).
+     */
     constructor(loggerMode: LoggerMode) {
         this.loggerMode = loggerMode;
         this.initializeColorUsageCount();
     }
-    
+        
+    /**
+     * Attribue une couleur à un processus (et ses sous-processus si nécessaire) en fonction du mode de journalisation.
+     * @param {IServiceMetadata} metadata - Les métadonnées du processus.
+     * @param {IServiceMetadata} [parentProcessMetadata] - Les métadonnées du processus parent (facultatif).
+     * @returns {IServiceMetadata} Les métadonnées du processus avec la couleur attribuée.
+     */
     public setColorForProcess(metadata: IServiceMetadata, parentProcessMetadata?: IServiceMetadata): IServiceMetadata {
         switch (this.loggerMode) {
             case LoggerMode.CLASSIC:
@@ -38,8 +52,11 @@ export class ProcessesColorsService {
         return metadata;
     }
 
+    /**
+     * Initialise le compteur d'utilisation des couleurs.
+     * Exclut certaines couleurs et initialise le compteur à zéro pour les autres.
+     */
     private initializeColorUsageCount() {
-        // Exclure Black, White et Random de la liste des couleurs initiales
         const excludedColors = [ColorChoice.Black, ColorChoice.White];
         Object.values(ColorChoice)
             .filter(color => !excludedColors.includes(color))
@@ -48,6 +65,10 @@ export class ProcessesColorsService {
             });
     }
 
+    /**
+     * Attribue une couleur unique au processus en choisissant la couleur la moins utilisée.
+     * @returns {ColorChoice} La couleur choisie.
+     */
     private assignUniqueColor(): ColorChoice {
         let leastUsedColor: ColorChoice = ColorChoice.Red;
         let leastUsage = Infinity;

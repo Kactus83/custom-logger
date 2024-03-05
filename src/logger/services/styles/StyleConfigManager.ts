@@ -3,15 +3,26 @@ import { LoggerStylesConfig, LoggerStylesConfigOptions } from "../../../models/L
 import { classicOptions, coloredOptions, dockerOptions } from "../../../models/LoggerStylesConfigLib";
 import { LoggerMode } from "../../../types/LoggerMode";
 
+
+/**
+ * Gère la configuration des styles de journalisation pour l'application.
+ * Utilise le motif Singleton pour s'assurer qu'une seule instance de cette classe est créée.
+ */
 export class StyleConfigManager {
     private static instance: StyleConfigManager;
     private loggerStylesConfig: LoggerStylesConfig;
 
+    /**
+     * Constructeur privé pour empêcher l'instanciation directe et forcer l'utilisation de getInstance().
+     */
     private constructor() {
         this.loggerStylesConfig = new LoggerStylesConfig();
     }
 
-    // Méthode pour obtenir l'instance singleton
+    /**
+     * Obtient l'instance unique de StyleConfigManager.
+     * @returns {StyleConfigManager} L'instance singleton de StyleConfigManager.
+     */
     public static getInstance(): StyleConfigManager {
         if (!this.instance) {
             this.instance = new StyleConfigManager();
@@ -19,7 +30,10 @@ export class StyleConfigManager {
         return this.instance;
     }
 
-    // Initialiser ou mettre à jour la configuration de style en fonction du LoggerConfig
+    /**
+     * Met à jour la configuration des styles en fonction du mode de journalisation spécifié.
+     * @param {LoggerConfig} loggerConfig - La configuration du logger incluant le mode de journalisation.
+     */
     public updateStyleConfig(loggerConfig: LoggerConfig): void {
         let styleConfigOptions: LoggerStylesConfigOptions;
         switch (loggerConfig.loggerMode) {
@@ -36,11 +50,13 @@ export class StyleConfigManager {
                 return
         }
 
-        // Mise à jour de la configuration de style
         this.loggerStylesConfig.updateConfig(styleConfigOptions);
     }
 
-    // Méthode pour accéder à la configuration de style actuelle
+    /**
+     * Renvoie la configuration actuelle des styles de journalisation.
+     * @returns {LoggerStylesConfig} La configuration actuelle des styles.
+     */
     public getLoggerStylesConfig(): LoggerStylesConfig {
         return this.loggerStylesConfig;
     }

@@ -150,12 +150,6 @@ export class LoggerStyleService {
     private getHierarchySeparatorWithAlignment(formattedTimestamp: string): string {
         let separator = this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED ? "\n \n" : " -> ";
     
-        // if (this.loggerConfig.detailsLevel === LoggerDetailsLevel.DETAILED) {
-        //     // Calcul de l'espace nécessaire pour l'alignement
-        //     const alignmentLength = formattedTimestamp.length + 1; // +1 pour l'espace apres le timestamp
-        //     separator += ' '.repeat(alignmentLength);
-        // }
-    
         return separator;
     }
               
