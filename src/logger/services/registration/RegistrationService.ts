@@ -4,16 +4,16 @@ import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../..
 import { ProcessesColorsService } from "../styles/ProcessesColorsService";
 
 /**
- * Gère l'enregistrement des services et processus dans la base de données des processus.
+ * Manages the registration of services and processes in the process database.
  */
 export class RegistrationService {
     private processDatabase: ProcessDatabase;
     private processesColorsService: ProcessesColorsService;
 
     /**
-     * Constructeur de RegistrationService.
-     * @param {ProcessDatabase} processDatabase - Base de données des process pour l'enregistrement.
-     * @param {ProcessesColorsService} processesColorsService - Service pour attribuer des couleurs aux processus.
+     * Constructor of RegistrationService.
+     * @param {ProcessDatabase} processDatabase - Process database for registration.
+     * @param {ProcessesColorsService} processesColorsService - Service for assigning colors to processes.
      */
     constructor(processDatabase: ProcessDatabase, processesColorsService: ProcessesColorsService) {
         this.processDatabase = processDatabase;
@@ -21,25 +21,25 @@ export class RegistrationService {
     }
 
     /**
-     * Enregistre un service ou un sous-processus et lui attribue un ID.
-     * @param {IServiceMetadata} metadata - Métadonnées du service ou sous-processus.
-     * @returns {string} ID attribué au service ou sous-processus enregistré.
+     * Registers a service or subprocess and assigns it an ID.
+     * @param {IServiceMetadata} metadata - Metadata of the service or subprocess.
+     * @returns {string} ID assigned to the registered service or subprocess.
      */
     public registerService(metadata: IServiceMetadata): string {
 
         let updatedMetadata: IServiceMetadata;
 
         if(metadata instanceof SubProcessMetadata && metadata.mainProcessId) {
-            // Récupération des métadonnées du parent si spécifié
+            // Retrieve parent metadata if specified
             const parentMetadata = metadata.mainProcessId ? this.processDatabase.findProcessById(metadata.mainProcessId)?.metadata : undefined;
-            // Mise à jour de la couleur du processus en tenant compte des métadonnées du parent si présentes
+            // Update the process color taking into account the parent metadata if present
             updatedMetadata = this.processesColorsService.setColorForProcess(metadata, parentMetadata);
         }else{
-            // Mise à jour de la couleur du processus sans métadonnées du parent 
+            // Update the process color without parent metadata
             updatedMetadata = this.processesColorsService.setColorForProcess(metadata);    
         }
 
-        // Enregistrement du processus dans la base de données et retour de l'ID attribué
+        // Register the process in the database and return the assigned ID
         let id: string;
         if (updatedMetadata instanceof MainProcessMetadata) {
             id = this.processDatabase.addMainProcess(updatedMetadata);

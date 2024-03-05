@@ -10,8 +10,8 @@ import { ProcessesColorsService } from "./services/styles/ProcessesColorsService
 import { MessageFormatterService } from "./services/format/MessageFormatterService";
 
 /**
- * Classe LoggingService - Service de journalisation centralisé pour l'application.
- * Utilise le motif Singleton pour s'assurer qu'une seule instance du service est créée.
+ * Class LoggingService - Centralized logging service for the application.
+ * Uses the Singleton pattern to ensure that only one instance of the service is created.
  */
 export class LoggingService {
     private static instance: LoggingService | null = null;
@@ -23,14 +23,14 @@ export class LoggingService {
 
 
     /**
-     * Constructeur privé pour empêcher l'instanciation directe et forcer l'utilisation de getInstance().
+     * Private constructor to prevent direct instantiation and force the use of getInstance().
      */
     private constructor() {
     }
 
     /**
-     * Obtient l'instance unique du LoggingService, en la créant si elle n'existe pas déjà.
-     * @returns {LoggingService} L'instance unique du LoggingService.
+     * Gets the unique instance of LoggingService, creating it if it doesn't already exist.
+     * @returns {LoggingService} The unique instance of LoggingService.
      */
     public static getInstance(): LoggingService {
         if (!LoggingService.instance) {
@@ -40,8 +40,8 @@ export class LoggingService {
     }
 
     /**
-     * Initialise le service de journalisation avec une configuration spécifique.
-     * @param {LoggerConfig} loggerConfig - La configuration à utiliser pour le service de journalisation.
+     * Initializes the logging service with a specific configuration.
+     * @param {LoggerConfig} loggerConfig - The configuration to use for the logging service.
      */
     public init(loggerConfig: LoggerConfig): void {
         this.loggerConfig = loggerConfig;
@@ -52,9 +52,9 @@ export class LoggingService {
     }
 
     /**
-     * Méthode statique pour initialiser le service de log. Facilite l'accès à l'initialisation sans nécessiter d'instance.
-     * @param {LoggerConfig} loggerConfig - Configuration du logger.
-     * @param {LoggerStylesConfig} [loggerStylesConfig] - Configuration optionnelle des styles de logger.
+     * Static method to initialize the logging service. Provides easy access to initialization without requiring an instance.
+     * @param {LoggerConfig} loggerConfig - Logger configuration.
+     * @param {LoggerStylesConfig} [loggerStylesConfig] - Optional logger styles configuration.
      */
     public static initialize(loggerConfig: LoggerConfig, loggerStylesConfig?: LoggerStylesConfig): void {
         const instance = LoggingService.getInstance();
@@ -62,8 +62,8 @@ export class LoggingService {
     }
 
     /**
-     * Vérifie si le service de log a été correctement initialisé.
-     * @returns {boolean} True si le service est initialisé, false sinon.
+     * Checks if the logging service has been properly initialized.
+     * @returns {boolean} True if the service is initialized, false otherwise.
      */
     public static isInitialized(): boolean {
         const instance = LoggingService.getInstance();
@@ -71,17 +71,17 @@ export class LoggingService {
     }
 
     /**
-     * Met à jour la configuration du service de log.
-     * @param {LoggerConfig} loggerConfig - Nouvelle configuration du logger.
+     * Updates the configuration of the logging service.
+     * @param {LoggerConfig} loggerConfig - The new logger configuration.
      */
     public updateConfig(loggerConfig: LoggerConfig): void {
         this.init(loggerConfig);
     }
 
     /**
-     * Enregistre un service au sein du système de log, en lui attribuant un identifiant unique.
-     * @param {IServiceMetadata} metadata - Métadonnées du service à enregistrer.
-     * @returns {string} Identifiant unique du service enregistré.
+     * Registers a service within the logging system, assigning it a unique identifier.
+     * @param {IServiceMetadata} metadata - Metadata of the service to register.
+     * @returns {string} Unique identifier of the registered service.
      */
     public registerService(metadata: IServiceMetadata): string {
         if(!this.registrationService) {
@@ -91,10 +91,10 @@ export class LoggingService {
     }
 
     /**
-     * Méthode principale pour logger les messages. Accepte divers types de messages et les traite en conséquence.
-     * @param {string} processId - Identifiant du processus qui log le message.
-     * @param {LogLevel} level - Niveau de log du message.
-     * @param {...(string | number | boolean | object)} messages - Messages à logger.
+     * Main method for logging messages. Accepts various types of messages and processes them accordingly.
+     * @param {string} processId - Identifier of the process logging the message.
+     * @param {LogLevel} level - Log level of the message.
+     * @param {...(string | number | boolean | object)} messages - Messages to be logged.
      */
     public log(processId: string, level: LogLevel, ...messages: (string | number | boolean | object)[]): void {
         if (!this.loggerConfig || !this.loggerStyleService || !this.registrationService || !this.processesColorsService) {
@@ -108,17 +108,17 @@ export class LoggingService {
     }       
 
     /**
-     * Détermine si un message doit être loggé en fonction du niveau de log configuré.
-     * @param {LogLevel} level - Niveau de log du message à évaluer.
-     * @returns {boolean} True si le message doit être loggé, false sinon.
+     * Determines whether a message should be logged based on the configured log level.
+     * @param {LogLevel} level - Log level of the message to evaluate.
+     * @returns {boolean} True if the message should be logged, false otherwise.
      */
     private shouldLog(level: LogLevel): boolean {
         return this.loggerConfig ? level >= this.loggerConfig.logLevel : false;
     }
 
     /**
-     * Affiche le message formaté dans la console.
-     * @param {string} message - Message formaté à afficher.
+     * Displays the formatted message in the console.
+     * @param {string} message - Formatted message to display.
      */
     private processConsoleLog(message: string): void {
         console.log(message);

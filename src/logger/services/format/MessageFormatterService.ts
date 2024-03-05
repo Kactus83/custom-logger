@@ -1,5 +1,14 @@
-
+/**
+ * Provides static methods to format log messages before they are output to the console.
+ * It supports formatting of various data types including objects, arrays, and primitives into a readable string format.
+ */
 export class MessageFormatterService {
+
+    /**
+     * Formats a series of messages into a single string.
+     * @param {...any[]} messages - An array of messages of various types.
+     * @returns {string} A single formatted string combining all input messages.
+     */
     public static formatMessages(...messages: any[]): string {
         // Aplatit le tableau de messages si nécessaire pour éviter les tableaux de tableaux
         const flatMessages = [].concat(...messages);
@@ -13,6 +22,11 @@ export class MessageFormatterService {
         return formattedMessages.trim();
     }
 
+    /**
+     * Formats a single message based on its type.
+     * @param {any} message - The message to format.
+     * @returns {string} The formatted message.
+     */
     private static formatSingleMessage(message: any): string {
 
         if (typeof message === 'object' && message !== null) {

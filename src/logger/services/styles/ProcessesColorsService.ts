@@ -3,16 +3,16 @@ import { IServiceMetadata, MainProcessMetadata, SubProcessMetadata } from "../..
 import { ColorChoice } from "../../../types/TerminalColors";
 
 /**
- * Service en charge de l'attribution des couelurs aux différents process.
- * Attribue des couleurs aux processus en fonction du mode de journalisation.
+ * Service responsible for assigning colors to different processes.
+ * Assigns colors to processes based on the logging mode.
  */
 export class ProcessesColorsService {
     private colorUsageCount: Map<ColorChoice, number> = new Map();
     private loggerMode: LoggerMode;
 
     /**
-     * Initialise le service avec le mode de journalisation spécifié.
-     * @param {LoggerMode} loggerMode - Le mode de journalisation (CLASSIC, COLORED, DOCKER).
+     * Initializes the service with the specified logging mode.
+     * @param {LoggerMode} loggerMode - The logging mode (CLASSIC, COLORED, DOCKER).
      */
     constructor(loggerMode: LoggerMode) {
         this.loggerMode = loggerMode;
@@ -20,10 +20,10 @@ export class ProcessesColorsService {
     }
         
     /**
-     * Attribue une couleur à un processus (et ses sous-processus si nécessaire) en fonction du mode de journalisation.
-     * @param {IServiceMetadata} metadata - Les métadonnées du processus.
-     * @param {IServiceMetadata} [parentProcessMetadata] - Les métadonnées du processus parent (facultatif).
-     * @returns {IServiceMetadata} Les métadonnées du processus avec la couleur attribuée.
+     * Assigns a color to a process (and its sub-processes if necessary) based on the logging mode.
+     * @param {IServiceMetadata} metadata - The metadata of the process.
+     * @param {IServiceMetadata} [parentProcessMetadata] - The metadata of the parent process (optional).
+     * @returns {IServiceMetadata} The metadata of the process with the assigned color.
      */
     public setColorForProcess(metadata: IServiceMetadata, parentProcessMetadata?: IServiceMetadata): IServiceMetadata {
         switch (this.loggerMode) {
@@ -32,10 +32,10 @@ export class ProcessesColorsService {
                 break;
             case LoggerMode.COLORED:
                 if (parentProcessMetadata instanceof SubProcessMetadata) {
-                    // Si le parent est un SubProcess, hériter la couleur du parent
+                    // If the parent is a SubProcess, inherit the color from the parent
                     metadata.color = parentProcessMetadata.color;
                 } else {
-                    // Si le parent est un MainProcess ou s'il n'y a pas de parent, assigner une nouvelle couleur unique
+                    // If the parent is a MainProcess or there is no parent, assign a new unique color
                     metadata.color = this.assignUniqueColor();
                 }
                 break;
@@ -53,8 +53,8 @@ export class ProcessesColorsService {
     }
 
     /**
-     * Initialise le compteur d'utilisation des couleurs.
-     * Exclut certaines couleurs et initialise le compteur à zéro pour les autres.
+     * Initializes the color usage count.
+     * Excludes certain colors and initializes the count to zero for the others.
      */
     private initializeColorUsageCount() {
         const excludedColors = [ColorChoice.Black, ColorChoice.White];
@@ -66,8 +66,8 @@ export class ProcessesColorsService {
     }
 
     /**
-     * Attribue une couleur unique au processus en choisissant la couleur la moins utilisée.
-     * @returns {ColorChoice} La couleur choisie.
+     * Assigns a unique color to the process by choosing the least used color.
+     * @returns {ColorChoice} The chosen color.
      */
     private assignUniqueColor(): ColorChoice {
         let leastUsedColor: ColorChoice = ColorChoice.Red;
@@ -80,7 +80,7 @@ export class ProcessesColorsService {
             }
         });
 
-        // Mettre à jour le compteur d'utilisation pour la couleur choisie
+        // Update the usage count for the chosen color
         this.colorUsageCount.set(leastUsedColor, this.colorUsageCount.get(leastUsedColor)! + 1);
 
         return leastUsedColor;
