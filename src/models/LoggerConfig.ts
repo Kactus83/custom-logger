@@ -2,6 +2,9 @@ import { LoggerDetailsLevel } from "../types/LoggerDetailsLevel";
 import { LoggerMode } from "../types/LoggerMode";
 import { LogLevel } from "../types/LogLevel";
 
+/**
+ * Logger Main Configuration class
+ */
 export class LoggerConfig {
     logLevel: LogLevel;
     loggerMode: LoggerMode;

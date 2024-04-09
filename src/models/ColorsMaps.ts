@@ -1,6 +1,9 @@
 import { TerminalDarkColors, TerminalLightColors } from "../types/TerminalColors";
 import { ColorChoice } from "../types/TerminalColors";
 
+/**
+ * Mapping of the dark colors to the color choices.
+ */
 export const DarkColorMapping: { [key in ColorChoice]: string } = {
     Black: TerminalDarkColors.Black,
     Red: TerminalDarkColors.Red,
@@ -12,6 +15,9 @@ export const DarkColorMapping: { [key in ColorChoice]: string } = {
     White: TerminalDarkColors.White
 };
 
+/**
+ * Mapping of the light colors to the color choices.
+ */
 export const LightColorMapping: { [key in ColorChoice]: string } = {
     Black: TerminalLightColors.Black,
     Red: TerminalLightColors.Red,

@@ -1,4 +1,6 @@
-
+/**
+ * Configuration for the SubProcessLoggerClient
+ */
 export class SubProcessLoggerConfig {
     constructor(
         public serviceName: string,

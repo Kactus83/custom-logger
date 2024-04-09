@@ -3,30 +3,52 @@ import { ColorChoice } from "../types/TerminalColors";
 import { TerminalStyles } from "../types/TerminalStyles";
 import { DarkColorMapping } from "./ColorsMaps";
 
-// Définition des structures pour les styles
+/**
+ * Configuration for the Logger Styles
+ */
 export interface LoggerElementStyles {
-    default: TerminalStyles[];
-    trace?: TerminalStyles[];
-    debug?: TerminalStyles[];
-    info?: TerminalStyles[];
-    warn?: TerminalStyles[];
-    error?: TerminalStyles[];
+    default: TerminalStyles[]; // Default styles for the logger element
+    trace?: TerminalStyles[]; // Styles for the 'trace' log level
+    debug?: TerminalStyles[]; // Styles for the 'debug' log level
+    info?: TerminalStyles[]; // Styles for the 'info' log level
+    warn?: TerminalStyles[]; // Styles for the 'warn' log level
+    error?: TerminalStyles[]; // Styles for the 'error' log level
 }
 
+/**
+ * Configuration for the Logger Element
+ */
 export class LoggerElementConfig {
-    MainProcess: LoggerElementStyles;
-    SubProcess: LoggerElementStyles;
+    MainProcess: LoggerElementStyles; // Styles for the main process logger element
+    SubProcess: LoggerElementStyles; // Styles for the sub process logger element
 
+    /**
+     * Creates a new instance of LoggerElementConfig.
+     * @param mainProcess - Styles for the main process logger element.
+     * @param subProcess - Styles for the sub process logger element.
+     */
     constructor(mainProcess: LoggerElementStyles, subProcess: LoggerElementStyles) {
         this.MainProcess = mainProcess;
         this.SubProcess = subProcess;
     }
 
+    /**
+     * Gets the styles for the logger element based on the process type and log level.
+     * @param isMainProcess - Indicates whether the logger element belongs to the main process.
+     * @param level - The log level.
+     * @returns The styles for the logger element.
+     */
     getStyles(isMainProcess: boolean, level: LogLevel): TerminalStyles[] {
         const processStyles = isMainProcess ? this.MainProcess : this.SubProcess;
         return this.resolveStyles(processStyles, level);
     }
 
+    /**
+     * Resolves the styles for the logger element based on the log level.
+     * @param styles - The styles for the logger element.
+     * @param level - The log level.
+     * @returns The resolved styles for the logger element.
+     */
     private resolveStyles(styles: LoggerElementStyles, level: LogLevel): TerminalStyles[] {
         switch (level) {
             case LogLevel.TRACE: return styles.trace || styles.default;
@@ -39,17 +61,23 @@ export class LoggerElementConfig {
     }
 }
 
+/**
+ * Configuration for the Logger Styles
+ */
 export class LoggerStylesConfig {
-    timestamp: LoggerElementConfig;
-    logLevel: LoggerElementConfig;
-    serviceName: LoggerElementConfig;
-    message: LoggerElementConfig;
-    mainProcessColor: ColorChoice = ColorChoice.White;
-    subProcessColor: ColorChoice = ColorChoice.White;
-    colorMapping: { [key in ColorChoice]: string } = DarkColorMapping;
+    timestamp: LoggerElementConfig; // Configuration for the timestamp logger element
+    logLevel: LoggerElementConfig; // Configuration for the log level logger element
+    serviceName: LoggerElementConfig; // Configuration for the service name logger element
+    message: LoggerElementConfig; // Configuration for the message logger element
+    mainProcessColor: ColorChoice = ColorChoice.White; // Color choice for the main process
+    subProcessColor: ColorChoice = ColorChoice.White; // Color choice for the sub process
+    colorMapping: { [key in ColorChoice]: string } = DarkColorMapping; // Color mapping for terminal colors
 
+    /**
+     * Creates a new instance of LoggerStylesConfig.
+     */
     constructor() {
-        // Initialisation avec des styles par défaut pour chaque élément de log
+        // Initialize with default styles for each logger element
         let defaultElementStyles: LoggerElementStyles = { default: [TerminalStyles.Reset] };
         this.timestamp = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
         this.logLevel = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
@@ -57,7 +85,10 @@ export class LoggerStylesConfig {
         this.message = new LoggerElementConfig(defaultElementStyles, defaultElementStyles);
     }
 
-    // Méthode pour fusionner la configuration actuelle avec une nouvelle
+    /**
+     * Updates the current configuration with a new configuration.
+     * @param newConfig - The new configuration options.
+     */
     updateConfig(newConfig: LoggerStylesConfigOptions): void {
         if (newConfig.timestamp) {
             this.timestamp = new LoggerElementConfig(newConfig.timestamp.MainProcess, newConfig.timestamp.SubProcess);
@@ -83,14 +114,15 @@ export class LoggerStylesConfig {
     }
 }
 
-// Utilisation de l'interface pour les options de configuration externe
+/**
+ * Configuration options for LoggerStylesConfig.
+ */
 export interface LoggerStylesConfigOptions {
-    timestamp?: LoggerElementConfig;
-    logLevel?: LoggerElementConfig;
-    serviceName?: LoggerElementConfig;
-    message?: LoggerElementConfig;
-    mainProcessColor?: ColorChoice;
-    subProcessColor?: ColorChoice;
-    colorMapping?: { [key in ColorChoice]: string }; 
+    timestamp?: LoggerElementConfig; // Configuration for the timestamp logger element
+    logLevel?: LoggerElementConfig; // Configuration for the log level logger element
+    serviceName?: LoggerElementConfig; // Configuration for the service name logger element
+    message?: LoggerElementConfig; // Configuration for the message logger element
+    mainProcessColor?: ColorChoice; // Color choice for the main process
+    subProcessColor?: ColorChoice; // Color choice for the sub process
+    colorMapping?: { [key in ColorChoice]: string }; // Color mapping for terminal colors
 }
-

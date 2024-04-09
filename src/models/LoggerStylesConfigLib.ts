@@ -3,20 +3,29 @@ import { TerminalStyles } from "../types/TerminalStyles";
 import { DarkColorMapping, LightColorMapping } from "./ColorsMaps"; 
 import { ColorChoice } from "../types/TerminalColors";
 
-// Définition initiale de styles par défaut pour réutilisation
+
+/**
+ * Configuration for the Classic mode Logger Styles
+ */
+
+// Styles for the différents levels of classic log elements
 const defaultStyles: LoggerElementStyles = {
     default: [TerminalStyles.None]
 };
+
+// Styles for the différents levels of tag logs elements
 const defaultStyles_Tag: LoggerElementStyles = {
     default: [TerminalStyles.Bright]
 };
+
+// Styles for the différents levels of timestamps elements
 const defaultStyles_Timestamps: LoggerElementStyles = {
     default: [TerminalStyles.Dim],
     warn: [TerminalStyles.None],
     error: [TerminalStyles.Blink]
 };
 
-// Construction de la configuration pour le mode CLASSIC
+// Complete style configuration for classic mode
 export const classicOptions: LoggerStylesConfigOptions = {
     timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
     logLevel: new LoggerElementConfig(defaultStyles_Tag, defaultStyles_Tag),
@@ -26,7 +35,11 @@ export const classicOptions: LoggerStylesConfigOptions = {
     mainProcessColor: ColorChoice.White
 };
 
-// Construction de la configuration pour le mode COLORED
+/**
+ * Configuration for the Colored mode Logger Styles
+ */
+
+// Styles for the différents levels of classic log elements
 const coloredStyles: LoggerElementStyles = {
     default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
@@ -35,6 +48,8 @@ const coloredStyles: LoggerElementStyles = {
     warn: [TerminalStyles.None],
     error: [TerminalStyles.None]
 };
+
+// Styles for the différents levels of tag logs elements
 const coloredStyles_Tags: LoggerElementStyles = {
     default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
@@ -44,6 +59,7 @@ const coloredStyles_Tags: LoggerElementStyles = {
     error: [TerminalStyles.Bright]
 };
 
+// Complete style configuration for colored mode
 export const coloredOptions: LoggerStylesConfigOptions = {
     timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
     logLevel: new LoggerElementConfig(coloredStyles_Tags, coloredStyles_Tags),
@@ -54,7 +70,11 @@ export const coloredOptions: LoggerStylesConfigOptions = {
     subProcessColor: ColorChoice.Blue
 };
 
-// Construction de la configuration pour le mode DOCKER
+/**
+ * Configuration for the Docker mode Logger Styles
+ */
+
+// Styles for the différents levels of classic log elements
 const dockerStyles: LoggerElementStyles = {
     default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
@@ -63,6 +83,8 @@ const dockerStyles: LoggerElementStyles = {
     warn: [TerminalStyles.None],
     error: [TerminalStyles.None]
 };
+
+// Styles for the differents levels of tag logs elements
 const dockerStyles_Tags: LoggerElementStyles = {
     default: [TerminalStyles.None],
     trace: [TerminalStyles.Dim],
@@ -71,6 +93,8 @@ const dockerStyles_Tags: LoggerElementStyles = {
     warn: [TerminalStyles.Bright],
     error: [TerminalStyles.Bright]
 };
+
+// Complete style configuration for the Docker mode
 export const dockerOptions: LoggerStylesConfigOptions = {
     timestamp: new LoggerElementConfig(defaultStyles_Timestamps, defaultStyles_Timestamps),
     logLevel: new LoggerElementConfig(dockerStyles_Tags, dockerStyles_Tags),

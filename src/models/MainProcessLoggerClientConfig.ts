@@ -2,6 +2,9 @@ import { LoggerDetailsLevel } from "../types/LoggerDetailsLevel";
 import { LogLevel } from "../types/LogLevel";
 import { LoggerMode } from "../types/LoggerMode";
 
+/**
+ * Main Process Logger Client Configuration
+ */
 export class MainProcessLoggerConfig {
     constructor(
         public serviceName: string,
