@@ -1,3 +1,6 @@
+/**
+ * Enum for log levels.
+ */
 export enum LogLevel {
     NONE = 0,
     TRACE = 1,

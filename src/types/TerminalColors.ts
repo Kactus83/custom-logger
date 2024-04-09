@@ -1,4 +1,6 @@
-
+/**
+ * Enum for terminal colors for dark and light themes
+ */
 export enum TerminalColors {
     Dark_Black = '\x1b[30m',
     Dark_Red = '\x1b[31m',
@@ -18,6 +20,9 @@ export enum TerminalColors {
     LightWhite = '\x1b[97m',
 }
 
+/**
+ * Enum for terminal colors for dark theme
+ */
 export enum TerminalDarkColors {
     Black = '\x1b[30m',
     Red = '\x1b[31m',
@@ -29,6 +34,9 @@ export enum TerminalDarkColors {
     White = '\x1b[37m',
 }
 
+/**
+ * Enum for terminal colors for light theme
+ */
 export enum TerminalLightColors {
     Black = '\x1b[90m',
     Red = '\x1b[91m',
@@ -40,6 +48,9 @@ export enum TerminalLightColors {
     White = '\x1b[97m',
 }
 
+/**
+ * String colors for the terminal
+ */
 export enum ColorChoice {
     Blue = 'Blue',
     Green = 'Green',

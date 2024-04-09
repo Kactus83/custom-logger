@@ -1,12 +1,16 @@
 import { ColorChoice } from "./TerminalColors";
 
-// Interface de base pour les métadonnées des services
+/**
+ * Interface for the service metadata
+ */
 export interface IServiceMetadata {
   serviceName: string;
   color?: ColorChoice;
 }
 
-// Classe pour les métadonnées des main processes
+/**
+ * Interface for the main process metadata
+ */
 export class MainProcessMetadata implements IServiceMetadata {
   serviceName: string;
   color?: ColorChoice;
@@ -17,7 +21,9 @@ export class MainProcessMetadata implements IServiceMetadata {
   }
 }
 
-// Classe pour les métadonnées des subprocesses
+/**
+ * Interface for the sub process metadata
+ */
 export class SubProcessMetadata implements IServiceMetadata {
   serviceName: string;
   mainProcessId: string;

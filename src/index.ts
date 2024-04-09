@@ -1,3 +1,7 @@
+/**
+ * Exports for the NPM Package
+ * @module Logger
+ */
 export * from "./logger/LoggingService";
 export * from "./logger/clients/LoggerClient";
 export * from "./types/LogLevel";

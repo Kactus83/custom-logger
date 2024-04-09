@@ -1,3 +1,6 @@
+/**
+ * Terminal styles codes
+ */
 export enum TerminalStyles {
     None = '',
     Reset = '\x1b[0m',
